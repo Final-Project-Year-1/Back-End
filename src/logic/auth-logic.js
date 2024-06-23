@@ -18,7 +18,6 @@ async function register(user) {
 
     return token;
 }
-console.log("hello")
 async function login(credentials) {
 
     const errors = credentials.validateSync();
