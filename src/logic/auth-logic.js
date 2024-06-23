@@ -18,7 +18,7 @@ async function register(user) {
 
     return token;
 }
-
+console.log("hello")
 async function login(credentials) {
 
     const errors = credentials.validateSync();
@@ -26,9 +26,9 @@ async function login(credentials) {
 
     credentials.password = cyber.hash(credentials.password);
 
-    const existingUser = await UserModel.findOne({ email: credentials.email, password: credentials.password}).exec();
+    const existingUser = await UserModel.findOne({ email: credentials.email, password: credentials.password }).exec();
 
-    if(!existingUser) {
+    if (!existingUser) {
         throw new ErrorModel(401, "Incorrect email or password");
     }
 
