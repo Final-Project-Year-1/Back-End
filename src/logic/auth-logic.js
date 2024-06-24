@@ -1,7 +1,7 @@
 import cyber from '../utils/cyber.js';
 import UserModel from "../models/user-model.js";
 import ErrorModel from '../models/error-model.js';
-
+import mongoose from 'mongoose';
 
 async function register(user) {
 
@@ -51,10 +51,22 @@ async function getAllUsers()
 {
     return UserModel.find().exec();
 }
+
+async function getUserCount() {
+    try {
+        const count = await UserModel.countDocuments();
+        return { userCount: count };
+    } catch (err) {
+        console.error("Error in getUserCount:", err);
+        throw new ErrorModel(err.status || 500, err.message || "Internal server error");
+    }
+}
+
 export default {
     register,
     login,
     findUserById,
     deleteUser,
-    getAllUsers
+    getAllUsers,
+    getUserCount,
 }

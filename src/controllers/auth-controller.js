@@ -58,4 +58,19 @@ router.get("/auth/users", async (request, response) => {
         response.status(400).json(err);
     }
 });
+
+
+router.get('/auth/user-count', async (req, res) => {
+    try {
+        const result = await logic.getUserCount();
+        res.json(result);
+    } catch (err) {
+        if (err instanceof ErrorModel) {
+            res.status(err.status).json({ error: err.message });
+        } else {
+            res.status(500).json({ error: "Internal server error" });
+        }
+    }
+});
+
 export default router;
