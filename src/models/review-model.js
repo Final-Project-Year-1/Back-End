@@ -1,12 +1,15 @@
 import mongoose, { Schema } from "mongoose";
-
+import VacationModel from "./vacation-model.js";
+import UserModel from "./user-model.js";
 const ReviewSchema = new Schema({
   vacationId: {
     type: Schema.Types.ObjectId,
+    ref: "VacationModel",
     required: true,
   },
   userId: {
     type: Schema.Types.ObjectId,
+    ref: "UserModel",
     required: true,
   },
   rating: {
@@ -31,14 +34,14 @@ const ReviewSchema = new Schema({
 });
 
 ReviewSchema.virtual("user", {
-    ref: UserModel,
+    ref: "UserModel",
     localField: "userId",
     foreignField: "_id",
     justOne: true
 });
 
 ReviewSchema.virtual("vacation", {
-    ref: VacationModel,
+    ref: "VacationModel",
     localField: "vacationId",
     foreignField: "_id",
     justOne: true
