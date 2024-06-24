@@ -1,19 +1,21 @@
 import mongoose, { Schema } from "mongoose";
-import VacationModel from "./vacation-model";
+import VacationModel from "./vacation-model.js";
+import UserModel from "./user-model.js";
 
 const BookingSchema = new Schema({
     vacationId: {
         type: Schema.Types.ObjectId,
+        ref: "VacationModel",
         required: true
       },
       userId: {
         type: Schema.Types.ObjectId,
+        ref: "UserModel",
         required: true
       },
       bookingDate: {
         type: Date,
         default: Date.now,
-        required: true
       },
       status: {
         type: String,
@@ -28,14 +30,14 @@ const BookingSchema = new Schema({
 });
 
 BookingSchema.virtual("user", {
-    ref: UserModel,
+    ref: "UserModel",
     localField: "userId",
     foreignField: "_id",
     justOne: true
 });
 
 BookingSchema.virtual("vacation", {
-    ref: VacationModel,
+    ref: "VacationModel",
     localField: "vacationId",
     foreignField: "_id",
     justOne: true

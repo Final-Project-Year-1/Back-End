@@ -26,6 +26,37 @@ const UserSchema = new Schema({
         trim: true,
         unique: true
     },
+    nationality: {
+        type: String,
+        required:[true, "Missing Country"],
+        minlength:[4, "Country is too short"],
+        maxlength: [56, "Country is too long"],
+        match: [/^([a-zA-Z]*)$/, "Invalid Country"],
+        trim: true
+    },
+    birthDate: {
+        type: Date,
+        required: [true, "Missing Birth Date"]
+      },
+      gender: {
+        type: String,
+        enum: ['Male', 'Female'],
+        required: [true, "Missing Gender"]
+    },
+    passportDetails: {
+        passportNumber: {
+            type: String,
+            minlength: [8, "Passport number is too short"],
+            maxlength: [9, "Passport number is too long"],
+            match: [/^[A-PR-WYa-pr-wy][1-9]\d\s?\d{4}[1-9]$/, "Invalid Passport Number"]
+        },
+        issueDate: {
+            type: Date
+        },
+        expiryDate: {
+            type: Date
+        }
+    },
     password: {
         type: String,
         required: [true, "Missing Password"],
