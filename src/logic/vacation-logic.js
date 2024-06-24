@@ -1,7 +1,3 @@
-// createVacation 
-// deleteVacation
-// update
-// fetch all
 
 import ErrorModel from "../models/error-model.js";
 import VacationModel from "../models/vacation-model.js";

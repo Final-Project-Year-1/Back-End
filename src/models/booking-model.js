@@ -13,6 +13,10 @@ const BookingSchema = new Schema({
         ref: "UserModel",
         required: true
       },
+      companyName:{
+        type: Schema.Types.ObjectId,
+        ref: "CompanyModel"
+    },
       bookingDate: {
         type: Date,
         default: Date.now,
