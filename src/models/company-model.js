@@ -9,5 +9,5 @@ const CompanySchema = new Schema({
     versionKey: false
 });
 
-const CompanyModel = mongoose.model("Company", CompanySchema, "company-name");
+const CompanyModel = mongoose.model("CompanyModel", CompanySchema, "company-name");
 export default CompanyModel;

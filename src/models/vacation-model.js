@@ -1,4 +1,6 @@
 import mongoose, { Schema } from "mongoose";
+import CompanyModel from "./company-model.js"; 
+import CategoryModel from "./category-model.js";
 
 const VacationSchema = new Schema({
     destination:{
@@ -38,11 +40,11 @@ const VacationSchema = new Schema({
     },
     companyName:{
         type: Schema.Types.ObjectId,
-        ref: "Company"
+        ref: "CompanyModel"
     },
     tripCategory:{
        type: Schema.Types.ObjectId,
-       ref: "Category"
+       ref: "CategoryModel"
     },
     image: {
         type: Object, 
@@ -54,6 +56,20 @@ const VacationSchema = new Schema({
     versionKey:false, 
     toJSON:{virtuals:true},
     id: false
+});
+
+VacationSchema.virtual("company", {
+    ref: "CompanyModel", 
+    localField: "companyName",
+    foreignField: "_id",
+    justOne: true
+});
+
+VacationSchema.virtual("category", {
+    ref: "CategoryModel", 
+    localField: "tripCategory",
+    foreignField: "_id",        
+    justOne: true
 });
 
 const VacationModel = mongoose.model("VacationModel", VacationSchema, "vacations");

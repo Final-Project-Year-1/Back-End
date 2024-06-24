@@ -9,5 +9,5 @@ const CategorySchema = new Schema({
     versionKey: false
 });
 
-const CategoryModel = mongoose.model("Category", CategorySchema, "trip-category");
+const CategoryModel = mongoose.model("CategoryModel", CategorySchema, "trip-category");
 export default CategoryModel;
