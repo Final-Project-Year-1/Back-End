@@ -32,14 +32,17 @@ const VacationSchema = new Schema({
         max: [100, "group number can't exceed 50000"]
     },
     vacationType:{
+        type: String,
         enum: ['All-Inclusive', 'Bed and Breakfast'],
         required: true
     },
     companyName:{
-        type: Schema.Types.ObjectId
+        type: Schema.Types.ObjectId,
+        ref: "Company"
     },
     tripCategory:{
-       type: Schema.Types.ObjectId
+       type: Schema.Types.ObjectId,
+       ref: "Category"
     },
     image: {
         type: Object, 
