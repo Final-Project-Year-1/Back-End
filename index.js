@@ -11,6 +11,8 @@ import reviewController from './src/controllers/review-controller.js'
 import numOfVacations from './src/controllers/vacations-number-logic.js'
 import numOfBooking from './src/controllers/booked-number-controller.js'
 import bookedPerMonth from './src/controllers/Booked-per-month-controller.js'
+import companyRoutes from './src/controllers/companies-controller.js'; 
+
 const app = express();
 
 app.use(express.json())
@@ -21,6 +23,7 @@ app.use("/api", reviewController);
 app.use("/api", numOfVacations);
 app.use("/api", numOfBooking);
 app.use("/api", bookedPerMonth);
+app.use("/api", companyRoutes);
 app.get('/', (req, res) => {
   res.send('Welcome to my server!');
 });
