@@ -81,4 +81,29 @@ router.get("/vacations/images/:imageName", async (request, response) => {
     }
 });
 
+router.get("/vacation/total-vacations", async (req, res) => {
+    try {
+        const result = await logic.getTotalVacations();
+        res.json(result);
+    } catch (err) {
+        if (err instanceof ErrorModel) {
+            res.status(err.status).json({ error: err.message });
+        } else {
+            res.status(500).json({ error: "Internal server error" });
+        }
+    }
+});
+
+router.get('/vacation/vacations-per-company/:companyId', async (req, res) => {
+    try {
+        const result = await logic.getTotalVacationsByCompany(req.params.companyId);
+        res.json(result);
+    } catch (err) {
+        if (err instanceof ErrorModel) {
+            res.status(err.status).json({ error: err.message });
+        } else {
+            res.status(500).json({ error: "Internal server error" });
+        }
+    }
+});
 export default router;

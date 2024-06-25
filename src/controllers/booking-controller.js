@@ -67,7 +67,7 @@ router.get("/bookings//:vacationId", async (request, response) => {
 
 router.get("/bookings/:id", async (request, response) => {
     try {
-        const booking = await logic.getBookingByBookingId(request.params.id);
+        const booking = await logic.findOneBooking(request.params.id);
         response.json(booking);
     } catch (err) {
         console.log(err);

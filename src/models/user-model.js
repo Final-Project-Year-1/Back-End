@@ -61,7 +61,8 @@ const UserSchema = new Schema({
         type: String,
         required: [true, "Missing Password"],
         minlength: [8, "Password is too short"],
-        match: [/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/, "Password must contain at least one letter or number"],
+        maxlength: [30, "Password is too long"],
+        match: [/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,30}$/, "Password must contain at least one letter and one number"],
         trim: true
     },
     role: {

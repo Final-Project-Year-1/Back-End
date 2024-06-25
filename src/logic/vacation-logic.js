@@ -3,6 +3,7 @@ import VacationModel from "../models/vacation-model.js";
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
+import CompanyModel from "../models/company-model.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -59,10 +60,36 @@ async function deleteVacation(_id) {
     if (!deletedVacation) throw new ErrorModel(404, `_id ${_id} not found`);
 }
 
+async function getTotalVacations() {
+    try {
+        const totalVacations = await VacationModel.countDocuments({});
+        return { totalVacations };
+    } catch (err) {
+        console.error("Error in getTotalVacations:", err);
+        throw new ErrorModel(err.status || 500, err.message || "Internal server error");
+    }
+}
+
+async function getTotalVacationsByCompany(companyId) {
+    try {
+        const company = await CompanyModel.findById(companyId);
+        if (!company) {
+            throw new ErrorModel(404, `Company with id ${companyId} not found`);
+        }
+
+        const totalVacations = await VacationModel.countDocuments({ companyName: companyId });
+        return { companyId: company._id, companyName: company.company, totalVacations };
+    } catch (err) {
+        console.error("Error in getTotalVacationsByCompany:", err);
+        throw new ErrorModel(err.status || 500, err.message || "Internal server error");
+    }
+}
 export default {
     getAllVacations,
     getOneVacation,
     createVacation,
     updateVacation,
-    deleteVacation
+    deleteVacation,
+    getTotalVacations,
+    getTotalVacationsByCompany,
 };

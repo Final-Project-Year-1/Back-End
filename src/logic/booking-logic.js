@@ -1,6 +1,5 @@
 import BookingModel from "../models/booking-model.js";
 import ErrorModel from "../models/error-model.js";
-import VacationModel from "../models/vacation-model.js";
 
 async function createBooking(booking) {
     const errors = booking.validateSync();
@@ -58,17 +57,13 @@ async function getBookingByVacationId(vacationId) {
     .exec();
 }
 // shir you got this
-async function getBookingById(bookingId) {
-    return BookingModel.findById(bookingId)
-    .populate({
-        path: 'vacationId',
-        populate: [
-            { path: 'companyName', model: 'CompanyModel' },
-            { path: 'tripCategory', model: 'CategoryModel' }
-        ]
-    })
-    .populate('userId')
-    .exec();
+async function findOneBooking(_id) {
+    const vacation = await BookingModel.findById(_id)
+        .populate("companyName")
+        .populate("tripCategory")
+        .exec();
+    if (!vacation) throw new ErrorModel(404, `_id ${_id} not found`);
+    return vacation;
 }
 
 export default {
@@ -77,6 +72,6 @@ export default {
     deleteBooking,
     updateBooking,
     getBookingByUserId,
-    getBookingById,
+    findOneBooking,
     getBookingByVacationId,
 };
