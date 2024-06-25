@@ -57,6 +57,7 @@ async function getBookingByVacationId(vacationId) {
     .populate('userId')
     .exec();
 }
+// shir you got this
 async function getBookingById(bookingId) {
     return BookingModel.findById(bookingId)
     .populate({

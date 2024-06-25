@@ -45,7 +45,7 @@ async function getBookingsByCompany() {
                 }
             },
             {
-                $sort: { totalBookings: -1 } // סידור לפי כמות ההזמנות בסדר יורד
+                $sort: { totalBookings: -1 } 
             }
         ]);
 

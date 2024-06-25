@@ -46,8 +46,8 @@ router.put("/vacation/reviews/:id", async (request, response) => {
 });
 router.get("/vacation/reviews/:id", async (request, response) => {
     try {
-        const review = await logic.getReviewById(request.params.id);
-        response.json(review);
+        const reviews = await logic.getReviewByVacationId(request.params.id);
+        response.json(reviews);
     } catch (err) {
         console.log(err);
         response.status(400).json(err);
