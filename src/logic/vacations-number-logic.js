@@ -3,6 +3,7 @@ import VacationModel from "../models/vacation-model.js";
 import CompanyModel from "../models/company-model.js";
 import ErrorModel from '../models/error-model.js';
 
+
 async function getTopCompany() {
     try {
         const vacationsByCompany = await getVacationsByCompany();
@@ -20,6 +21,8 @@ async function getTopCompany() {
     }
 }
 
+//adding a count of total vacations for each company
+//and sorts the companies by the number of vacations in descending order
 async function getVacationsByCompany() {
     try {
         const result = await CompanyModel.aggregate([
@@ -45,7 +48,7 @@ async function getVacationsByCompany() {
                 }
             },
             {
-                $sort: { totalVacations: -1 } // סידור לפי כמות החופשות בסדר יורד
+                $sort: { totalVacations: -1 }
             }
         ]);
 
