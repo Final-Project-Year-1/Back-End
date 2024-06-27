@@ -1,6 +1,7 @@
 import CompanyModel from "../models/company-model.js";
 import ErrorModel from "../models/error-model.js";
 
+//We don't need this
 async function getTotalCompanies() {
     try {
         const totalCompanies = await CompanyModel.countDocuments({});

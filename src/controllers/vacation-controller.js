@@ -3,10 +3,11 @@ import logic from '../logic/vacation-logic.js';
 import VacationModel from "../models/vacation-model.js";
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { dirname } from 'path';
+import verifyLoggedIn from "../middleware/verify-logged-in.js";
+import verifyAdmin from "../middleware/verify-admin.js";
 
 const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+const __dirname = path.dirname(__filename);
 
 const router = express.Router();
 
@@ -21,7 +22,7 @@ router.get("/vacations", async (request, response) => {
     }
 });
 
-router.get("/vacations/:_id", async (request, response) => {
+router.get("/vacations/:_id", verifyLoggedIn, async (request, response) => {
     try {
         const _id = request.params._id;
         const vacation = await logic.getOneVacation(_id);
@@ -32,7 +33,7 @@ router.get("/vacations/:_id", async (request, response) => {
     }
 });
 
-router.put("/vacations/:_id", async (request, response) => {
+router.put("/vacations/:_id", verifyAdmin , async (request, response) => {
     try {
         request.body._id = request.params._id;
         request.body.image = request.files?.image;
@@ -45,9 +46,9 @@ router.put("/vacations/:_id", async (request, response) => {
     }
 });
 
-router.post("/vacations", async (request, response) => {
+router.post("/vacations", verifyAdmin, async (request, response) => {
     try {
-        request.body.image = request.files?.image; // Correctly assign image file
+        request.body.image = request.files?.image;
         const vacation = new VacationModel(request.body);
         const addedVacation = await logic.createVacation(vacation);
         response.status(201).json(addedVacation);
@@ -58,7 +59,7 @@ router.post("/vacations", async (request, response) => {
     }
 });
 
-router.delete("/vacations/:_id", async (request, response) => {
+router.delete("/vacations/:_id", verifyAdmin, async (request, response) => {
     try {
         const _id = request.params._id;
         await logic.deleteVacation(_id);
@@ -69,7 +70,6 @@ router.delete("/vacations/:_id", async (request, response) => {
     }
 });
 
-//doesnt work
 router.get("/vacations/images/:imageName", async (request, response) => {
     try {
         const imageName = request.params.imageName;
@@ -81,6 +81,7 @@ router.get("/vacations/images/:imageName", async (request, response) => {
     }
 });
 
+//what is it doing?
 router.get("/vacation/total-vacations", async (req, res) => {
     try {
         const result = await logic.getTotalVacations();

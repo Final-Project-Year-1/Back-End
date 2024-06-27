@@ -12,6 +12,12 @@ import numOfVacations from './src/controllers/vacations-number-logic.js'
 import numOfBooking from './src/controllers/booked-number-controller.js'
 import bookedPerMonth from './src/controllers/Booked-per-month-controller.js'
 import companyRoutes from './src/controllers/companies-controller.js'; 
+import fileUpload from "express-fileupload";
+import path from "path";
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 
@@ -24,9 +30,13 @@ app.use("/api", numOfVacations);
 app.use("/api", numOfBooking);
 app.use("/api", bookedPerMonth);
 app.use("/api", companyRoutes);
+app.use(fileUpload());
+app.use(express.static(path.join(__dirname, "Front-End")));
+
 app.get('/', (req, res) => {
   res.send('Welcome to my server!');
 });
+
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
