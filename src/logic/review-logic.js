@@ -20,6 +20,7 @@ async function deleteReview(reviewId) {
     return deletedReview;
 }
 
+//Do we need this?
 async function getAllReviews() {
     return ReviewModel.find()
     .populate({
@@ -32,6 +33,7 @@ async function getAllReviews() {
     .populate('userId')
     .exec();
 }
+
 async function getReviewByVacationId(vacationId) {
     return ReviewModel.find({ vacationId }).exec();
 }

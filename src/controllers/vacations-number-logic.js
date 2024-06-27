@@ -4,6 +4,7 @@ import ErrorModel from '../models/error-model.js';
 
 const router = express.Router();
 
+//Do we need this?
 router.get('/top-vacations', async (req, res) => {
     try {
         const result = await logic.getTopCompany();
@@ -17,7 +18,7 @@ router.get('/top-vacations', async (req, res) => {
     }
 });
 
-
+//Do need this:
 router.get('/vacations-by-company', async (req, res) => {
     try {
         const result = await logic.getVacationsByCompany();

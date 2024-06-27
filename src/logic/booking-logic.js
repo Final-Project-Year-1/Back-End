@@ -31,7 +31,6 @@ async function updateBooking(bookingId, bookingData) {
     return updatedBooking;
 }
 
-
 async function getBookingByUserId(userId) {
     return BookingModel.find({userId})
         .populate({
@@ -44,6 +43,7 @@ async function getBookingByUserId(userId) {
         .populate('userId')
         .exec();
 }
+
 async function getBookingByVacationId(vacationId) {
     return BookingModel.find({vacationId})
     .populate({
@@ -56,14 +56,19 @@ async function getBookingByVacationId(vacationId) {
     .populate('userId')
     .exec();
 }
-// shir you got this
+
 async function findOneBooking(_id) {
-    const vacation = await BookingModel.findById(_id)
-        .populate("companyName")
-        .populate("tripCategory")
-        .exec();
-    if (!vacation) throw new ErrorModel(404, `_id ${_id} not found`);
-    return vacation;
+  const vacation = await BookingModel.findById(_id)
+    .populate({
+      path: "vacationId",
+      populate: [
+        { path: "companyName", model: "CompanyModel" },
+        { path: "tripCategory", model: "CategoryModel" },
+      ],
+    })
+    .exec();
+  if (!vacation) throw new ErrorModel(404, `_id ${_id} not found`);
+  return vacation;
 }
 
 export default {

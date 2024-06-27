@@ -1,12 +1,11 @@
 import ErrorModel from "../models/error-model.js";
 import VacationModel from "../models/vacation-model.js";
+import CompanyModel from "../models/company-model.js";
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { dirname } from 'path';
-import CompanyModel from "../models/company-model.js";
 
 const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+const __dirname = path.dirname(__filename);
 
 async function getAllVacations() {
     return VacationModel.find()
@@ -29,8 +28,8 @@ async function createVacation(vacation) {
 
     if (vacation.image) {
         const extension = vacation.image.name.substring(vacation.image.name.lastIndexOf("."));
-        vacation.imageName = vacation._id + extension;
-        await vacation.image.mv(path.join(__dirname, "..", "assets", "images", "vacations", vacation.imageName));
+        vacation.imageName = uuid() + extension;
+        await vacation.image.mv(path.join(__dirname, ".." , "assets", "images", "vacations", vacation.imageName));
         delete vacation.image;
     }
 
@@ -44,8 +43,8 @@ async function updateVacation(vacation) {
 
     if (vacation.image) {
         const extension = vacation.image.name.substring(vacation.image.name.lastIndexOf("."));
-        vacation.imageName = vacation._id + extension;
-        await vacation.image.mv(path.join(__dirname, "..", "assets", "images", "vacations", vacation.imageName));
+        vacation.imageName = uuid() + extension;
+        await vacation.image.mv(path.join(__dirname, ".." , "assets", "images", "vacations", vacation.imageName));
         delete vacation.image;
     }
 
@@ -84,6 +83,7 @@ async function getTotalVacationsByCompany(companyId) {
         throw new ErrorModel(err.status || 500, err.message || "Internal server error");
     }
 }
+
 export default {
     getAllVacations,
     getOneVacation,
