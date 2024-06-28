@@ -28,7 +28,6 @@ const UserSchema = new Schema({
     },
     nationality: {
         type: String,
-        required:[true, "Missing Country"],
         minlength:[4, "Country is too short"],
         maxlength: [56, "Country is too long"],
         match: [/^([a-zA-Z]*)$/, "Invalid Country"],
@@ -36,11 +35,10 @@ const UserSchema = new Schema({
     },
     birthDate: {
         type: Date,
-        required: [true, "Missing Birth Date"]
       },
       gender: {
         type: String,
-        enum: ['Male', 'Female'],
+        enum: ['male', 'female'],
         required: [true, "Missing Gender"]
     },
     passportDetails: {
@@ -61,8 +59,7 @@ const UserSchema = new Schema({
         type: String,
         required: [true, "Missing Password"],
         minlength: [8, "Password is too short"],
-        maxlength: [30, "Password is too long"],
-        match: [/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*?&]{8,30}$/, "Password must contain at least one letter and one number, and can include special characters"],
+        match: [/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*?&]{8,}$/, "Password must contain at least one letter and one number, and can include special characters"],
         trim: true
     },
     role: {
