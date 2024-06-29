@@ -1,12 +1,13 @@
 import express from 'express';
 import logic from '../logic/booked-number-logic.js'; 
 import ErrorModel from '../models/error-model.js';
+import verifyAdmin from '../middleware/verify-admin.js';
 
 const router = express.Router();
 
 
 //Do we need this?
-router.get('/top-booked-company', async (req, res) => {
+router.get('/top-booked-company', verifyAdmin, async (req, res) => {
     try {
         const result = await logic.getTopBookedCompany();
         res.json(result);
@@ -19,7 +20,7 @@ router.get('/top-booked-company', async (req, res) => {
     }
 });
 
-router.get('/bookings-by-company', async (req, res) => {
+router.get('/bookings-by-company', verifyAdmin, async (req, res) => {
     try {
         const result = await logic.getBookingsByCompany();
         res.json(result);

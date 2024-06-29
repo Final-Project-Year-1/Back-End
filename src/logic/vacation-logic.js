@@ -3,6 +3,7 @@ import VacationModel from "../models/vacation-model.js";
 import CompanyModel from "../models/company-model.js";
 import path from 'path';
 import { fileURLToPath } from 'url';
+import mongoose from "mongoose";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -76,20 +77,89 @@ async function getTotalVacationsByCompany(companyId) {
             throw new ErrorModel(404, `Company with id ${companyId} not found`);
         }
 
-        const totalVacations = await VacationModel.countDocuments({ companyName: companyId });
-        return { companyId: company._id, companyName: company.company, totalVacations };
+        const vacations = await VacationModel.find({ companyName: companyId }, '_id');
+        
+        const detailedVacations = await Promise.all(vacations.map(async (vacation) => {
+            const detailedVacation = await getOneVacation(vacation._id);
+            return {
+                vacationId: detailedVacation._id,
+                vacationName: detailedVacation.name,
+                vacationDescription: detailedVacation.description,
+                vacationDestnation: detailedVacation.destination,
+            };
+        }));
+
+        const totalVacations = vacations.length;
+        return { companyId: company._id, companyName: company.company, totalVacations, vacations: detailedVacations };
     } catch (err) {
         console.error("Error in getTotalVacationsByCompany:", err);
         throw new ErrorModel(err.status || 500, err.message || "Internal server error");
     }
 }
+async function getTopVacations() {
+    try {
+        const vacationsByCompany = await getVacationsByCompany();
+        const maxVacations = Math.max(...vacationsByCompany.map(company => company.totalVacations));
+        const topCompanies = vacationsByCompany.filter(company => company.totalVacations === maxVacations);
 
+        if (!topCompanies.length) {
+            throw new ErrorModel(404, "No companies found");
+        }
+
+        return topCompanies;
+    } catch (err) {
+        console.error("Error in getTopCompany:", err);
+        throw new ErrorModel(err.status || 500, err.message || "Internal server error");
+    }
+}
+
+async function getVacationsByCompany() {
+    try {
+        const result = await CompanyModel.aggregate([
+            {
+                $lookup: {
+                    from: 'vacations', 
+                    localField: '_id',
+                    foreignField: 'companyName',
+                    as: 'vacations'
+                }
+            },
+            {
+                $addFields: {
+                    totalVacations: { $size: "$vacations" }
+                }
+            },
+            {
+                $project: {
+                    _id: 0,
+                    companyId: "$_id",
+                    totalVacations: 1,
+                    company: "$company"
+                }
+            },
+            {
+                $sort: { totalVacations: -1 }
+            }
+        ]);
+
+        if (!result || result.length === 0) {
+            throw new ErrorModel(404, "No companies found");
+        }
+
+        return result;
+    } catch (err) {
+        console.error("Error in getVacationsByCompany:", err);
+        throw new ErrorModel(err.status || 500, err.message || "Internal server error");
+    }
+}
 export default {
     getAllVacations,
     getOneVacation,
     createVacation,
+    getVacationsByCompany,
     updateVacation,
     deleteVacation,
     getTotalVacations,
+    getTopVacations,
     getTotalVacationsByCompany,
 };

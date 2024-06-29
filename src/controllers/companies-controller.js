@@ -1,10 +1,12 @@
 import express from 'express';
 import logic from '../logic/companies-logic.js'; 
 import ErrorModel from '../models/error-model.js';
+import verifyLoggedIn from '../middleware/verify-logged-in.js';
+import verifyAdmin from '../middleware/verify-admin.js';
 
 const router = express.Router();
 
-router.get('/total-companies', async (req, res) => {
+router.get('/total-companies',verifyLoggedIn, async (req, res) => {
     try {
         const result = await logic.getTotalCompanies();
         res.json(result);
@@ -17,7 +19,7 @@ router.get('/total-companies', async (req, res) => {
     }
 });
 
-router.get('/all-companies', async (req, res) => {
+router.get('/all-companies', verifyLoggedIn,async (req, res) => {
     try {
         const companies = await logic.getAllCompanies();
         res.json(companies);

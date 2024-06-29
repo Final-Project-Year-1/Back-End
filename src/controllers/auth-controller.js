@@ -41,13 +41,16 @@ router.get("/auth/users/:id",verifyAdmin, async (request, response) => {
     }
 });
 
-router.delete("/auth/users/delete/:id",verifyAdmin, async (request, response) => {
+router.get("/auth/users/searchByEmail/:email", verifyAdmin, async (request, response) => {
     try {
-        const deletedUser = await logic.deleteUser(request.params.id);
-        response.json(deletedUser);
+        const user = await logic.findUserByEmail(request.params.email);
+        if (!user) {
+            return response.status(404).json({ message: "Email not found" });
+        }
+        response.json(user);
     } catch (err) {
-        console.log(err);
-        response.status(400).json(err);
+        console.error("Error in finding user by email:", err);
+        response.status(400).json({ message: err.message });
     }
 });
 
