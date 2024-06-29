@@ -46,7 +46,7 @@ const UserSchema = new Schema({
             type: String,
             minlength: [8, "Passport number is too short"],
             maxlength: [9, "Passport number is too long"],
-            required: true,
+            //required: true,
             match: [/^\d+$/, "Invalid Passport Number"]
         },
         issueDate: {
