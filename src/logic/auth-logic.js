@@ -8,6 +8,11 @@ async function register(user) {
     const errors = user.validateSync();
     if (errors) throw new ErrorModel(400, errors.message);
 
+    const isTaken = await isEmailTaken(user);
+    if (isTaken) {
+        throw new ErrorModel(400, `email ${user.email} already taken`);
+    }
+
     user.password = cyber.hash(user.password);
 
     user.save();
@@ -41,10 +46,12 @@ async function findUserById(userId) {
     return UserModel.findById(userId)
     .exec();
 }
+
+
 async function deleteUser(userId) {
     const deletedUser = await UserModel.findByIdAndDelete(userId).exec();
-    if (!deletedeUser) throw new ErrorModel(404, `Review with id  ${userId} not found`);
-    return deletedeUser;
+    if (!deletedUser) throw new ErrorModel(404, `Review with id  ${userId} not found`);
+    return deletedUser;
 }
 
 async function getAllUsers()
@@ -60,6 +67,11 @@ async function getUserCount() {
         console.error("Error in getUserCount:", err);
         throw new ErrorModel(err.status || 500, err.message || "Internal server error");
     }
+}
+
+async function isEmailTaken(user) {
+    const foundUser = await UserModel.findOne({ email: user.email });
+    return foundUser !== null;
 }
 
 export default {
