@@ -13,10 +13,10 @@ const BookingSchema = new Schema({
         ref: "UserModel",
         required: true
       },
-      companyName:{
-        type: Schema.Types.ObjectId,
-        ref: "CompanyModel"
-    },
+    //   companyName:{
+    //     type: Schema.Types.ObjectId,
+    //     ref: "CompanyModel"
+    // },
       bookingDate: {
         type: Date,
         default: Date.now,
@@ -39,6 +39,13 @@ BookingSchema.virtual("user", {
     foreignField: "_id",
     justOne: true
 });
+
+// BookingSchema.virtual("company", {
+//   ref: "CompanyModel", 
+//   localField: "companyName",
+//   foreignField: "_id",
+//   justOne: true
+// });
 
 BookingSchema.virtual("vacation", {
     ref: "VacationModel",

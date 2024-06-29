@@ -11,11 +11,14 @@ async function getAllBookings() {
         .populate({
             path: 'vacationId',
             populate: [
-                { path: 'companyName', model: 'CompanyModel' },
+                { path: 'companyName', model: 'CompanyModel'},
                 { path: 'tripCategory', model: 'CategoryModel' }
             ]
         })
-        .populate('userId')
+        .populate({
+            path: 'userId',
+            select: 'firstName lastName email'
+        })
         .exec();
 }
 

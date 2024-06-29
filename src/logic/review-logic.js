@@ -1,6 +1,7 @@
 import ReviewModel from '../models/review-model.js';
 import ErrorModel from '../models/error-model.js';
 import VacationModel from '../models/vacation-model.js'
+import UserModel from '../models/user-model.js';
 
 async function createReview(review) {
     const errors = review.validateSync();
@@ -33,9 +34,21 @@ async function getAllReviews() {
     .populate('userId')
     .exec();
 }
-
+async function getReviewsByUserId(userId) {
+    return ReviewModel.find({ userId })
+        .populate({
+            path: 'userId',
+            select: 'firstName lastName email'
+        })
+        .exec();
+}
 async function getReviewByVacationId(vacationId) {
-    return ReviewModel.find({ vacationId }).exec();
+    return ReviewModel.find({ vacationId })
+    .populate({
+        path: 'userId',
+        select: 'firstName lastName email'
+    })
+    .exec();
 }
 
 export default {
@@ -44,4 +57,5 @@ export default {
     deleteReview,
     getAllReviews,
     getReviewByVacationId,
+    getReviewsByUserId,
 };

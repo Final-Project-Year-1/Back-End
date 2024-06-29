@@ -38,22 +38,28 @@ async function login(credentials) {
     return token;
 }
 async function findUserById(userId) {
-    return UserModel.findById(userId)
-    .exec();
+    return UserModel.findById(userId).select('email lastName firstName')
+        .exec();
 }
-async function deleteUser(userId) {
-    const deletedUser = await UserModel.findByIdAndDelete(userId).exec();
-    if (!deletedUser) throw new ErrorModel(404, `Review with id  ${userId} not found`);
-    return deletedUser;
+
+async function findUserByEmail(email) {
+    return UserModel.findOne({ email: email }).select('email lastName firstName').exec();
 }
+
 async function updateUser(userId, userData) {
-        const updatedUser = await UserModel.findByIdAndUpdate(userId, userData, { new: true, runValidators: true }).exec();
-        if (!updatedUser) throw new ErrorModel(404, `User with id ${userId} not found`);
-        return updatedUser;
+    if (userData.password) {
+        userData.password = cyber.hash(userData.password);
     }
-async function getAllUsers()
-{
-    return UserModel.find().exec();
+    const updatedUser = await UserModel.findByIdAndUpdate(userId, userData, { new: true, runValidators: true }).exec();
+    if (!updatedUser) {
+        throw new ErrorModel(404, `User with id ${userId} not found`);
+    }
+    return updatedUser;
+}
+
+async function getAllUsers() {
+    return UserModel.find().select('email lastName firstName')
+        .exec();
 }
 
 async function getUserCount() {
@@ -70,8 +76,8 @@ export default {
     register,
     login,
     findUserById,
-    deleteUser,
     getAllUsers,
     getUserCount,
     updateUser,
+    findUserByEmail,
 }
