@@ -43,10 +43,14 @@ async function findUserById(userId) {
 }
 async function deleteUser(userId) {
     const deletedUser = await UserModel.findByIdAndDelete(userId).exec();
-    if (!deletedeUser) throw new ErrorModel(404, `Review with id  ${userId} not found`);
-    return deletedeUser;
+    if (!deletedUser) throw new ErrorModel(404, `Review with id  ${userId} not found`);
+    return deletedUser;
 }
-
+async function updateUser(userId, userData) {
+        const updatedUser = await UserModel.findByIdAndUpdate(userId, userData, { new: true, runValidators: true }).exec();
+        if (!updatedUser) throw new ErrorModel(404, `User with id ${userId} not found`);
+        return updatedUser;
+    }
 async function getAllUsers()
 {
     return UserModel.find().exec();
@@ -69,4 +73,5 @@ export default {
     deleteUser,
     getAllUsers,
     getUserCount,
+    updateUser,
 }
