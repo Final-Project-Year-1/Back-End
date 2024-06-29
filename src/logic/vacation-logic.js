@@ -85,6 +85,7 @@ async function getTotalVacationsByCompany(companyId) {
                 vacationId: detailedVacation._id,
                 vacationName: detailedVacation.name,
                 vacationDescription: detailedVacation.description,
+                vacationDestnation: detailedVacation.destination,
             };
         }));
 

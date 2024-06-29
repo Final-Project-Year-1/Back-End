@@ -17,7 +17,7 @@ router.post("/vacation/reviews", verifyLoggedIn, async (request, response) => {
     }
 });
 
-router.get("/vacation/reviews", async (request, response) => {
+router.get("/vacation/reviews", verifyLoggedIn, async (request, response) => {
     try {
         const reviews = await logic.getAllReviews();
         response.json(reviews);

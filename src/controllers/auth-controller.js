@@ -45,7 +45,7 @@ router.get("/auth/users/searchByEmail/:email", verifyAdmin, async (request, resp
     try {
         const user = await logic.findUserByEmail(request.params.email);
         if (!user) {
-            return response.status(404).json({ message: "User not found" });
+            return response.status(404).json({ message: "Email not found" });
         }
         response.json(user);
     } catch (err) {

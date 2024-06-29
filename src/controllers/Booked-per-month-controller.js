@@ -1,10 +1,11 @@
 import express from 'express';
 import logic from '../logic/booked-per-month-logic.js'; 
 import ErrorModel from '../models/error-model.js';
+import verifyAdmin from '../middleware/verify-admin.js';
 
 const router = express.Router();
 
-router.get('/bookings-by-month', async (req, res) => {
+router.get('/bookings-by-month', verifyAdmin, async (req, res) => {
     try {
         const result = await logic.getBookingsByCompanyByMonth();
         res.json(result);
@@ -17,7 +18,7 @@ router.get('/bookings-by-month', async (req, res) => {
     }
 });
 
-router.get('/bookings-by-company-by-month/:companyId', async (req, res) => {
+router.get('/bookings-by-company-by-month/:companyId', verifyAdmin,async (req, res) => {
     try {
         const result = await logic.getBookingsByMonthForCompany(req.params.companyId);
         res.json(result);
@@ -30,7 +31,7 @@ router.get('/bookings-by-company-by-month/:companyId', async (req, res) => {
     }
 });
 
-router.get('/total-bookings-by-month/:month', async (req, res) => {
+router.get('/total-bookings-by-month/:month', verifyAdmin, async (req, res) => {
     try {
         const result = await logic.getTotalBookingsByMonth(req.params.month);
         res.json(result);
