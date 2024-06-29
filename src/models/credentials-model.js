@@ -14,7 +14,7 @@ const CredentialsSchema = new Schema({
         type: String,
         required: [true, "Missing Password"],
         minlength: [8, "Password is too short"],
-        match: [/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/, "Password must contain at least one letter or number"],
+        match: [/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*?&]{8,}$/, "Password must contain at least one letter and one number, and can include special characters"],
         trim: true
     }
 }, {
