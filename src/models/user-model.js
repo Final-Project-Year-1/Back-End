@@ -48,7 +48,7 @@ const UserSchema = new Schema({
             maxlength: [9, "Passport number is too long"],
             //required: true,
             match: [/^\d+$/, "Invalid Passport Number"]
-        },
+        }, 
         issueDate: {
             type: Date
         },
