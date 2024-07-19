@@ -72,7 +72,7 @@ router.delete("/vacations/:_id", verifyAdmin, async (request, response) => {
     }
 });
 
-router.get("/vacations/images/:imageName", verifyLoggedIn,async (request, response) => {
+router.get("/vacations/images/:imageName",async (request, response) => {
     try {
         const imageName = request.params.imageName;
         const absolutePath = path.join(__dirname, "..", "assets", "images", "vacations", imageName);
