@@ -136,4 +136,87 @@ router.get('/vacations-by-company',verifyLoggedIn, async (req, res) => {
     }
 });
 
+router.get('/top-rated-vacations', async (req, res) => {
+    try {
+        const topVacations = await logic.getTopRatedVacations();
+        res.json(topVacations);
+    } catch (err) {
+        console.error("Error in GET /top-rated-vacations:", err);
+        if (err instanceof ErrorModel) {
+            res.status(err.status).json({ error: err.message });
+        } else {
+            res.status(500).json({ error: "Internal server error" });
+        }
+    }
+});
+
+// נתיב לחיפוש חופשות לפי מספר נוסעים, חודש יציאה, חודש חזרה ויעד
+router.get('/search-vacations',  async (req, res) => {
+    const groupOf = req.body.numOfPassengers
+    const month = req.body.departureMonth
+    const dest = req.body.destination
+    
+    try {
+        if (!groupOf) {
+            throw new ErrorModel(400, 'All parameters are required: numOfPassengers, departureMonth, destination');
+        }
+
+        const passengers = parseInt(groupOf, 10);
+        if (isNaN(passengers)) {
+            console.log("numOfPassengers is not a number:", numOfPassengers);
+            throw new ErrorModel(400, 'numOfPassengers must be a number');
+        }
+
+        const result = await logic.searchQuery(groupOf, month, dest);
+
+        res.json(result);
+    } catch (err) {
+        console.error("Error in GET /search-vacations:", err);
+        if (err instanceof ErrorModel) {
+            res.status(err.status).json({ error: err.message });
+        } else {
+            res.status(500).json({ error: "Internal server error" });
+        }
+    }
+});
+
+
+router.get('/search-vacations-query2', async (req, res) => {
+    const groupOf = req.body.numOfPassengers
+    const company = req.body.companyId
+    const rating = req.body.minRating
+    const month = req.body.departureMonth
+    console.log("------------------")
+    console.log(company, rating,groupOf,month)
+    try {
+
+        if (!company || !rating || !groupOf) {
+            throw new ErrorModel(400, 'All parameters are required: companyId, minRating, numOfPassengers');
+        }
+
+        const passengers = parseInt(groupOf, 10);
+        const rate = parseInt(rating, 10);
+
+        if (isNaN(passengers)) {
+            console.log("numOfPassengers is not a number:", passengers);
+            throw new ErrorModel(400, 'numOfPassengers must be a number');
+        }
+        if (isNaN(rate)) {
+            console.log("minRating is not a number:", rate);
+            throw new ErrorModel(400, 'minRating must be a number');
+        }
+        const result = await logic.searchVacationsByCriteria(company,rating,groupOf,month);
+        console.log("---------------------asd----------")
+
+        res.json(result);
+    } catch (err) {
+        console.error("Error in GET /search-vacations-query2:", err);
+        if (err instanceof ErrorModel) {
+            res.status(err.status).json({ error: err.message });
+        } else {
+            res.status(500).json({ error: "Internal server error" });
+        }
+    }
+});
+
 export default router;

@@ -2,22 +2,49 @@ import ReviewModel from '../models/review-model.js';
 import ErrorModel from '../models/error-model.js';
 import VacationModel from '../models/vacation-model.js'
 import UserModel from '../models/user-model.js';
+import vacationLogic from '../logic/vacation-logic.js';
 
 async function createReview(review) {
+    console.log("Starting createReview function");
     const errors = review.validateSync();
-    if (errors) throw new ErrorModel(400, errors.message);
-    return review.save();
+    if (errors) {
+        console.error("Validation errors:", errors.message);
+        throw new ErrorModel(400, errors.message);
+    }
+    const savedReview = await review.save();
+
+    await vacationLogic.updateVacationRating(review.vacationId);
+    await vacationLogic.updateGeneralVacationFields(review.vacationId);
+    return savedReview;
 }
 
 async function updateReview(reviewId, reviewData) {
+    console.log("Starting updateReview function");
     const updatedReview = await ReviewModel.findByIdAndUpdate(reviewId, reviewData, { new: true, runValidators: true }).exec();
-    if (!updatedReview) throw new ErrorModel(404, `Review with id ${reviewId} not found`);
+    if (!updatedReview) {
+        console.error(`Review with id ${reviewId} not found`);
+        throw new ErrorModel(404, `Review with id ${reviewId} not found`);
+    }
+
+    console.log(`Review updated: ${updatedReview}`);
+
+    console.log(`Calling updateVacationRating for vacation ${updatedReview.vacationId}`);
+    await vacationLogic.updateVacationRating(updatedReview.vacationId);
+    console.log(`Vacation rating updated for vacation ${updatedReview.vacationId}`);
+    
+    console.log(`Calling updateVacation for vacation ${updatedReview.vacationId}`);
+    await vacationLogic.updateGeneralVacationFields(updatedReview.vacationId);
+
     return updatedReview;
 }
-
 async function deleteReview(reviewId) {
+    console.log("Starting deleteReview function");
     const deletedReview = await ReviewModel.findByIdAndDelete(reviewId).exec();
     if (!deletedReview) throw new ErrorModel(404, `Review with id  ${reviewId} not found`);
+    await vacationLogic.updateVacationRating(deletedReview.vacationId);
+
+    await vacationLogic.updateGeneralVacationFields(deletedReview.vacationId);
+
     return deletedReview;
 }
 

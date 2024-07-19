@@ -46,6 +46,19 @@ const VacationSchema = new Schema({
        type: Schema.Types.ObjectId,
        ref: "CategoryModel"
     },
+    rating:{
+        type: Number,
+        default: 0,
+        min: 0,
+        max: 10,
+    },
+    spotsTaken:{
+        type: Number,
+        default: 0,
+    },
+    spotsLeft:{
+        type: Number,
+    },
     image: {
         type: Object, 
     },
