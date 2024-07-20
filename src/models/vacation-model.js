@@ -1,87 +1,87 @@
 import mongoose, { Schema } from "mongoose";
-import CompanyModel from "./company-model.js"; 
+import CompanyModel from "./company-model.js";
 import CategoryModel from "./category-model.js";
 
 const VacationSchema = new Schema({
-    destination:{
+    destination: {
         type: String,
         required: [true, "Missing destination"],
         minlength: [2, "destination name is too short"],
         trim: true
     },
-    description:{
+    description: {
         type: String,
         required: [true, "Missing description"],
         minlength: [2, "description name is too short"],
         trim: true
     },
-    startDate:{
+    startDate: {
         type: Date
     },
-    endDate:{
-       type: Date
+    endDate: {
+        type: Date
     },
-    price:{
+    price: {
         type: Number,
         required: [true, "Missing price"],
         min: [0, "Price can't be negative"],
         max: [50000, "Price can't exceed 50000"]
     },
-    groupOf:{
+    groupOf: {
         type: Number,
         required: [true, "Missing group number"],
         min: [1, "group number can't be negative"],
         max: [100, "group number can't exceed 50000"]
     },
-    vacationType:{
+    vacationType: {
         type: String,
         enum: ['All-Inclusive', 'Bed and Breakfast'],
         required: true
     },
-    companyName:{
+    companyName: {
         type: Schema.Types.ObjectId,
         ref: "CompanyModel"
     },
-    tripCategory:{
-       type: Schema.Types.ObjectId,
-       ref: "CategoryModel"
+    tripCategory: {
+        type: Schema.Types.ObjectId,
+        ref: "CategoryModel"
     },
-    rating:{
+    rating: {
         type: Number,
         default: 0,
         min: 0,
         max: 10,
     },
-    spotsTaken:{
+    spotsTaken: {
         type: Number,
         default: 0,
     },
-    spotsLeft:{
+    spotsLeft: {
         type: Number,
     },
     image: {
-        type: Object, 
+        type: Object,
     },
-    imageName:{
+    imageName: {
         type: String,
     },
 }, {
-    versionKey:false, 
-    toJSON:{virtuals:true},
+    versionKey: false,
+    toJSON: { virtuals: true },
     id: false
 });
 
 VacationSchema.virtual("company", {
-    ref: "CompanyModel", 
+    ref: "CompanyModel",
     localField: "companyName",
     foreignField: "_id",
     justOne: true
 });
 
 VacationSchema.virtual("category", {
-    ref: "CategoryModel", 
+    ref: "CategoryModel",
     localField: "tripCategory",
-    foreignField: "_id",        
+    foreignField: "_id",
     justOne: true
 });
 
