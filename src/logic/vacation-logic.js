@@ -314,6 +314,19 @@ async function searchVacationsByCriteria(companyId, minRating, numOfPassengers, 
         throw new ErrorModel(err.status || 500, err.message || "Internal server error");
     }
 }
+
+async function getAllDestinations() {
+    try {
+        const vacations = await getAllVacations();
+        const destinations = [...new Set(vacations.map(vacation => vacation.destination))];
+        const destinationCount = destinations.length;
+    
+        return { destinations, destinationCount };
+    } catch (err) {
+        console.error("Error in getAllDestinations:", err);
+        throw new ErrorModel(err.status || 500, err.message || "Internal server error");
+    }
+}
 export default {
     getAllVacations,
     getOneVacation,
@@ -330,4 +343,5 @@ export default {
     updateVacationRating,
     updateGeneralVacationFields,
     searchVacationsByCriteria,
+    getAllDestinations,
 };

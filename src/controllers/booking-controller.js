@@ -6,7 +6,7 @@ import verifyLoggedIn from "../middleware/verify-logged-in.js";
 
 const router = express.Router();
 
-router.post("/bookings", verifyLoggedIn, async (request, response) => {
+router.post("/newbooking", verifyLoggedIn, async (request, response) => {
     try {
         const booking = new BookingModel(request.body);
         const addedBooking = await logic.createBooking(booking);
@@ -16,7 +16,42 @@ router.post("/bookings", verifyLoggedIn, async (request, response) => {
         response.status(400).json(err);
     }
 });
+router.delete('/bookings/order/:orderNumber', verifyLoggedIn, async (request, response) => {
+    try {
+        const orderNumber = request.params.orderNumber;
+        const deletedBooking = await logic.deleteBookingByOrderNumber(orderNumber);
+        response.json(deletedBooking);
+    } catch (err) {
+        console.log(err);
+        response.status(err.status || 500).json({ message: err.message });
+    }
+});
 
+router.put('/bookings/order/:orderNumber', verifyLoggedIn, async (request, response) => {
+    try {
+        const orderNumber = request.params.orderNumber;
+        const bookingData = request.body;
+        const updatedBooking = await logic.updateBookingByOrderNumber(orderNumber, bookingData);
+        response.json(updatedBooking);
+    } catch (err) {
+        console.log(err);
+        response.status(err.status || 500).json({ message: err.message });
+    }
+});
+
+router.get('/bookings/order/:orderNumber', async (request, response) => {
+    try {
+        const orderNumber = request.params.orderNumber;
+        const booking = await logic.getBookingByOrderNumber(orderNumber);
+        if (!booking) {
+            return response.status(404).json({ message: 'Booking not found' });
+        }
+        response.json(booking);
+    } catch (err) {
+        console.log(err);
+        response.status(500).json({ message: 'Internal Server Error' });
+    }
+});
 router.get("/bookings", verifyLoggedIn, async (request, response) => {
     try {
         const data = await logic.getAllBookings();
@@ -57,7 +92,7 @@ router.get("/bookings/:_id", verifyAdmin, async (request, response) => {
     }
 });
 
-router.get("/bookings/bookings-by-user/:userId", verifyLoggedIn, async (request, response) => {
+router.get("/bookings/bookings-by-user/:userId", async (request, response) => {
     try {
         const booking = await logic.getBookingByUserId(request.params.userId);
         response.json(booking);

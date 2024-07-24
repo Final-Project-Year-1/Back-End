@@ -19,7 +19,7 @@ const BookingSchema = new Schema({
       },
       Passengers:{
         type: Number,
-        min: [0, "has to be higher than 0"],
+        min: [1, "has to be higher than 0"],
         default: 1,
       },
       status: {
@@ -27,7 +27,10 @@ const BookingSchema = new Schema({
         enum: ['pending', 'confirmed', 'cancelled'],
         default: 'pending',
         required: true
-      }
+      },
+      OrderNumber: {
+        type: String, // שדה מספר ההזמנה הוא String
+    }
 },{
     versionKey: false,
     toJSON: { virtuals: true }, 

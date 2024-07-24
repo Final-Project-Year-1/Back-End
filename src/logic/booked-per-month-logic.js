@@ -7,9 +7,26 @@ async function getBookingsByCompanyByMonth() {
     try {
         const result = await BookingModel.aggregate([
             {
+                $match: {
+                    bookingDate: { $exists: true, $ne: null },
+                    vacationId: { $exists: true, $ne: null }
+                }
+            },
+            {
+                $lookup: {
+                    from: 'vacations',
+                    localField: 'vacationId',
+                    foreignField: '_id',
+                    as: 'vacation'
+                }
+            },
+            {
+                $unwind: "$vacation"
+            },
+            {
                 $group: {
                     _id: {
-                        companyName: "$companyName",
+                        companyName: "$vacation.companyName",
                         year: { $year: "$bookingDate" },
                         month: { $month: "$bookingDate" }
                     },
@@ -46,6 +63,8 @@ async function getBookingsByCompanyByMonth() {
             }
         ]);
 
+        console.log("Aggregation Result:", result); // Log the result for debugging
+
         if (!result || result.length === 0) {
             throw new ErrorModel(404, "No bookings found");
         }
@@ -57,6 +76,7 @@ async function getBookingsByCompanyByMonth() {
     }
 }
 
+
 async function getBookingsByMonthForCompany(companyId) {
     try {
         const company = await CompanyModel.findById(companyId);
@@ -66,7 +86,18 @@ async function getBookingsByMonthForCompany(companyId) {
 
         const result = await BookingModel.aggregate([
             {
-                $match: { companyName: new mongoose.Types.ObjectId(companyId) } 
+                $lookup: {
+                    from: 'vacations',
+                    localField: 'vacationId',
+                    foreignField: '_id',
+                    as: 'vacation'
+                }
+            },
+            {
+                $unwind: "$vacation"
+            },
+            {
+                $match: { 'vacation.companyName': new mongoose.Types.ObjectId(companyId) }
             },
             {
                 $group: {

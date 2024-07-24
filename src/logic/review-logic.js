@@ -25,16 +25,8 @@ async function updateReview(reviewId, reviewData) {
         console.error(`Review with id ${reviewId} not found`);
         throw new ErrorModel(404, `Review with id ${reviewId} not found`);
     }
-
-    console.log(`Review updated: ${updatedReview}`);
-
-    console.log(`Calling updateVacationRating for vacation ${updatedReview.vacationId}`);
     await vacationLogic.updateVacationRating(updatedReview.vacationId);
-    console.log(`Vacation rating updated for vacation ${updatedReview.vacationId}`);
-    
-    console.log(`Calling updateVacation for vacation ${updatedReview.vacationId}`);
     await vacationLogic.updateGeneralVacationFields(updatedReview.vacationId);
-
     return updatedReview;
 }
 async function deleteReview(reviewId) {
@@ -48,7 +40,7 @@ async function deleteReview(reviewId) {
     return deletedReview;
 }
 
-//Do we need this?
+//Do we need this? Yes we need!
 async function getAllReviews() {
     return ReviewModel.find()
     .populate({

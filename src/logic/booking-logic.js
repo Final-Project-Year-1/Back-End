@@ -8,16 +8,30 @@ import vacationLogic from "./vacation-logic.js";
 //     return booking.save();
 // }
 
+
 async function createBooking(booking) {
     const errors = booking.validateSync();
     if (errors) throw new ErrorModel(400, errors.message);
-
+    booking.OrderNumber = await generateNextOrderNumber();
     const savedBooking = await booking.save();
 
     await vacationLogic.updateVacationSpots(booking.vacationId, booking.Passengers);
 
     return savedBooking;
 }
+async function generateNextOrderNumber() {
+    try {
+        const lastBooking = await BookingModel.findOne().sort({ OrderNumber: -1 }).exec();
+        const lastOrderNumber = lastBooking ? parseInt(lastBooking.OrderNumber, 10) : 0;
+        const nextOrderNumber = (lastOrderNumber + 1).toString().padStart(6, '0');
+        return nextOrderNumber;
+    } catch (error) {
+        console.error('Error generating order number:', error);
+        throw new ErrorModel(500, 'Internal Server Error');
+    }
+}
+
+
 async function getAllBookings() {
     return BookingModel.find()
         .populate({
@@ -40,15 +54,14 @@ async function deleteBooking(bookingId) {
     await vacationLogic.updateVacationSpots(deletedBooking.vacationId, (-1)*deletedBooking.Passengers);
     return deletedBooking;
 }
+async function deleteBookingByOrderNumber(orderNumber) {
+    const deletedBooking = await BookingModel.findOneAndDelete({ OrderNumber: orderNumber }).exec();
+    if (!deletedBooking) throw new ErrorModel(404, `Booking with OrderNumber ${orderNumber} not found`);
+    await vacationLogic.updateVacationSpots(deletedBooking.vacationId, (-1) * deletedBooking.Passengers);
+    return deletedBooking;
+}
 
-// async function updateBooking(bookingId, bookingData) {
-//     const updatedBooking = await BookingModel.findByIdAndUpdate(bookingId, bookingData, { new: true, runValidators: true }).exec();
-//     if (!updatedBooking) throw new ErrorModel(404, `Booking with id ${bookingId} not found`);
-//     newPassengers = bookingData.Passengers
-//     oldPassengers = 
-//     await vacationLogic.updateVacationSpots(updatedBooking.vacationId, (-1)*updatedBooking.Passengers);
-//     return updatedBooking;
-// }
+
 
 async function updateBooking(bookingId, bookingData) {
     const oldBooking = await BookingModel.findById(bookingId).exec();
@@ -66,7 +79,22 @@ async function updateBooking(bookingId, bookingData) {
 
     return updatedBooking;
 }
+async function updateBookingByOrderNumber(orderNumber, bookingData) {
+    const oldBooking = await BookingModel.findOne({ OrderNumber: orderNumber }).exec();
+    if (!oldBooking) throw new ErrorModel(404, `Booking with OrderNumber ${orderNumber} not found`);
 
+    const oldPassengers = oldBooking.Passengers;
+    const newPassengers = bookingData.Passengers;
+
+    const updatedBooking = await BookingModel.findOneAndUpdate({ OrderNumber: orderNumber }, bookingData, { new: true, runValidators: true }).exec();
+    if (!updatedBooking) throw new ErrorModel(404, `Booking with OrderNumber ${orderNumber} not found`);
+
+    const passengerDifference = newPassengers - oldPassengers;
+
+    await vacationLogic.updateVacationSpots(updatedBooking.vacationId, passengerDifference);
+
+    return updatedBooking;
+}
 async function getBookingByUserId(userId) {
     return BookingModel.find({userId})
         .populate({
@@ -79,7 +107,18 @@ async function getBookingByUserId(userId) {
         .populate('userId')
         .exec();
 }
-
+async function getBookingByOrderNumber(orderNumber) {
+    return BookingModel.findOne({ OrderNumber: orderNumber })
+        .populate({
+            path: 'vacationId',
+            populate: [
+                { path: 'companyName', model: 'CompanyModel' },
+                { path: 'tripCategory', model: 'CategoryModel' }
+            ]
+        })
+        .populate('userId')
+        .exec();
+}
 async function getBookingByVacationId(vacationId) {
     return BookingModel.find({vacationId})
     .populate({
@@ -115,4 +154,8 @@ export default {
     getBookingByUserId,
     findOneBooking,
     getBookingByVacationId,
+    generateNextOrderNumber,
+    getBookingByOrderNumber,
+    updateBookingByOrderNumber,
+    deleteBookingByOrderNumber,
 };

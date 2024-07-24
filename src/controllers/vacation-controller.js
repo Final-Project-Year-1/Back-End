@@ -206,7 +206,6 @@ router.get('/search-vacations-query2', async (req, res) => {
             throw new ErrorModel(400, 'minRating must be a number');
         }
         const result = await logic.searchVacationsByCriteria(company,rating,groupOf,month);
-        console.log("---------------------asd----------")
 
         res.json(result);
     } catch (err) {
@@ -216,6 +215,17 @@ router.get('/search-vacations-query2', async (req, res) => {
         } else {
             res.status(500).json({ error: "Internal server error" });
         }
+    }
+});
+router.get('/vacations/destinations/countries', async (req, res) => {
+    try {
+        console.log("Request received for /vacations/destinations");
+        const countries = await logic.getAllDestinations();
+        console.log("Sending response with destinations:", countries);
+        res.json(countries);
+    } catch (err) {
+        console.error("Error in /vacations/destinations:", err);
+        res.status(err.status || 500).json({ message: err.message });
     }
 });
 
