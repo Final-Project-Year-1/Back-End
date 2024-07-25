@@ -5,8 +5,8 @@ import UserModel from "./user-model.js";
 const BookingSchema = new Schema({
     vacationId: {
         type: Schema.Types.ObjectId,
-        ref: "VacationModel",
-        required: true
+        ref: "VacationModel", // object id of VacatioNModel 
+        required: true 
       },
       userId: {
         type: Schema.Types.ObjectId,
