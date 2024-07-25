@@ -69,14 +69,15 @@ async function updateVacation(vacation) {
     }
 
     const updatedVacation = await VacationModel.findByIdAndUpdate(vacation._id, vacation, { returnOriginal: false }).exec();
-    if (!updatedVacation) throw new ErrorModel(404, `_id ${vacation._id} not found`);
+    if (!updatedVacation) throw new ErrorModel(404, `Vacation with _id ${vacation._id} not found`);
 
     return updatedVacation;
 }
 
 async function deleteVacation(_id) {
     const deletedVacation = await VacationModel.findByIdAndDelete(_id).exec();
-    if (!deletedVacation) throw new ErrorModel(404, `_id ${_id} not found`);
+    if (!deletedVacation) throw new ErrorModel(404, `Vacation with _id ${_id} not found`);
+    return deletedVacation
 }
 
 async function getTotalVacations() {

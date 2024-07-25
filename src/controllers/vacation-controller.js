@@ -62,11 +62,9 @@ router.post("/vacations", verifyAdmin, async (request, response) => {
 
 router.delete("/vacations/:_id", verifyAdmin, async (request, response) => {
     try {
-        const _id = request.params._id;
-        await logic.deleteVacation(_id);
-        response.json(_id).sendStatus(204);
-    }
-    catch (err) {
+        const deletedVacation = await logic.deleteVacation(request.params._id);
+        response.json(deletedVacation);
+    } catch (err) {
         console.log(err);
         response.status(400).json(err);
     }
