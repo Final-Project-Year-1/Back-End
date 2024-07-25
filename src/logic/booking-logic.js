@@ -12,6 +12,14 @@ import vacationLogic from "./vacation-logic.js";
 async function createBooking(booking) {
     const errors = booking.validateSync();
     if (errors) throw new ErrorModel(400, errors.message);
+
+    const vacation = await vacationLogic.getOneVacation(booking.vacationId);
+    if (!vacation) throw new ErrorModel(404, `Vacation with id ${booking.vacationId} not found`);
+
+    if (booking.Passengers > vacation.spotsLeft) {
+        throw new ErrorModel(400, `Not enough spots left for the requested number of passengers`);
+    }
+
     booking.OrderNumber = await generateNextOrderNumber();
     const savedBooking = await booking.save();
 
