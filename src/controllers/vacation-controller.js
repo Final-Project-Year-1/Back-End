@@ -30,6 +30,7 @@ router.get("/vacations/:_id", verifyLoggedIn, async (request, response) => {
     }
     catch (err) {
         console.log(err);
+        response.status(400).json(err);
     }
 });
 
@@ -78,6 +79,7 @@ router.get("/vacations/images/:imageName" ,async (request, response) => {
     }
     catch (err) {
         console.log(err);
+        response.status(400).json(err);
     }
 });
 
