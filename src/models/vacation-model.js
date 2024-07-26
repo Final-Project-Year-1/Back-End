@@ -35,7 +35,7 @@ const VacationSchema = new Schema({
     },
     vacationType: {
         type: String,
-        enum: ['All-Inclusive', 'Bed and Breakfast'],
+        enum: ['All-Inclusive', 'Bed and Breakfast', 'Full Board', 'Half Board'],
         required: true
     },
     companyName: {
