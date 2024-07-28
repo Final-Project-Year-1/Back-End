@@ -3,7 +3,7 @@ import logic from '../logic/companies-logic.js';
 import ErrorModel from '../models/error-model.js';
 import verifyLoggedIn from '../middleware/verify-logged-in.js';
 import verifyAdmin from '../middleware/verify-admin.js';
-
+import CompanyModel from '../models/company-model.js';
 const router = express.Router();
 
 router.get('/total-companies',verifyLoggedIn, async (req, res) => {
@@ -29,6 +29,48 @@ router.get('/all-companies', verifyLoggedIn,async (req, res) => {
         } else {
             res.status(500).json({ error: "Internal server error" });
         }
+    }
+});
+router.post("/addCompany", verifyAdmin, async (request, response) => {
+    try {
+        const company = new CompanyModel(request.body);
+        const addedCompany = await logic.createCompany(company);
+        response.status(201).json(addedCompany);
+    } catch (err) {
+        console.log(err);
+        response.status(400).json(err);
+    }
+});
+router.get("/findCompany/:_id", verifyAdmin, async (request, response) => {
+    try {
+        const _id = request.params._id;
+        const company = await logic.findCompanyById(_id);
+        response.json(company);
+    }
+    catch (err) {
+        console.log(err);
+        response.status(400).json(err);
+    }
+});
+router.put("/updateCompany/:id", verifyAdmin, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { newName } = req.body;
+        const updatedCompany = await logic.updateCompanyName(id, req.body);
+        res.status(200).json(updatedCompany);
+    } catch (err) {
+        console.log(err);
+        res.status(400).json({ message: err.message });
+    }
+});
+router.delete("/deleteCompany/:id", verifyAdmin, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const result = await logic.deleteCompany(id);
+        res.status(200).json(result);
+    } catch (err) {
+        console.log(err);
+        res.status(400).json({ message: err.message });
     }
 });
 

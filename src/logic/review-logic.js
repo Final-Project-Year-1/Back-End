@@ -19,10 +19,8 @@ async function createReview(review) {
 }
 
 async function updateReview(reviewId, reviewData) {
-    console.log("Starting updateReview function");
     const updatedReview = await ReviewModel.findByIdAndUpdate(reviewId, reviewData, { new: true, runValidators: true }).exec();
     if (!updatedReview) {
-        console.error(`Review with id ${reviewId} not found`);
         throw new ErrorModel(404, `Review with id ${reviewId} not found`);
     }
     await vacationLogic.updateVacationRating(updatedReview.vacationId);

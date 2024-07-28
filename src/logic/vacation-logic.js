@@ -5,9 +5,11 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import mongoose from "mongoose";
 import ReviewModel from "../models/review-model.js";
+import bookingLogic from "../logic/booking-logic.js"
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+const CANCELLED_VACATION_ID = "000000000000000000000000";
 
 async function getAllVacations() {
     return VacationModel.find()
@@ -74,12 +76,52 @@ async function updateVacation(vacation) {
     return updatedVacation;
 }
 
+
 async function deleteVacation(_id) {
+    // קבלת החופשה כדי לשמור את imageName
+    const vacation = await VacationModel.findById(_id).exec();
+    if (!vacation) throw new ErrorModel(404, `Vacation with _id ${_id} not found`);
+
+    // יצירת חופשה מבוטלת אם היא לא קיימת
+    await createCancelledVacation();
+
+    // מחיקת חופשה
     const deletedVacation = await VacationModel.findByIdAndDelete(_id).exec();
     if (!deletedVacation) throw new ErrorModel(404, `Vacation with _id ${_id} not found`);
-    return deletedVacation
-}
 
+    // קבלת כל ההזמנות עם איידי של החופשה
+    const bookings = await bookingLogic.getBookingByVacationId(_id);
+
+    // שינוי הסטטוס של כל הזמנה ל-"cancelled" ועדכון איידי של החופשה לחופשה מבוטלת
+    for (const booking of bookings) {
+        booking.status = "cancelled";
+        booking.vacationId = CANCELLED_VACATION_ID;  // שינוי איידי לחופשה מבוטלת
+        await booking.save();
+    }
+
+    return deletedVacation;
+}
+async function createCancelledVacation() {
+    const existingVacation = await VacationModel.findById(CANCELLED_VACATION_ID).exec();
+    if (existingVacation) return existingVacation;
+
+    const cancelledVacation = new VacationModel({
+        _id: CANCELLED_VACATION_ID,
+        destination: "Cancelled",
+        description: "This vacation represents cancelled bookings.",
+        startDate: new Date(),
+        endDate: new Date(),
+        price: 0,
+        groupOf: 1,
+        vacationType: "Deleted",
+        companyName: "66a6181bdf91811f95d24e27",  // דוגמה לחברה
+        tripCategory: "66a3ca690aca3398927a017c",  // דוגמה לקטגוריה
+        imageName: "logo-vacationHub.png"
+    });
+
+    await cancelledVacation.save();
+    return cancelledVacation;
+}
 async function getTotalVacations() {
     try {
         const totalVacations = await VacationModel.countDocuments({});
