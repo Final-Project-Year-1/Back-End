@@ -11,7 +11,7 @@ const __dirname = path.dirname(__filename);
 
 const router = express.Router();
 
-router.get("/Allvacations", async (request, response) => {
+router.get("/Allvacations", verifyAdmin,async (request, response) => {
     try {
         const vacations = await logic.getAllVacations();
         response.json(vacations);
@@ -22,7 +22,7 @@ router.get("/Allvacations", async (request, response) => {
     }
 });
 
-router.get("/vacations/:_id", verifyLoggedIn, async (request, response) => {
+router.get("/vacations/:_id", verifyAdmin, async (request, response) => {
     try {
         const _id = request.params._id;
         const vacation = await logic.getOneVacation(_id);
