@@ -11,6 +11,7 @@ import reviewController from './src/controllers/review-controller.js'
 import numOfBooking from './src/controllers/booked-number-controller.js'
 import bookedPerMonth from './src/controllers/Booked-per-month-controller.js'
 import companyRoutes from './src/controllers/companies-controller.js'; 
+import categoryRouts from './src/controllers/category-controller.js'
 import fileUpload from "express-fileupload";
 import path from "path";
 import { fileURLToPath } from 'url';
@@ -29,6 +30,7 @@ app.use("/api", bookingController);
 app.use("/api", reviewController);
 app.use("/api", numOfBooking);
 app.use("/api", bookedPerMonth);
+app.use("/api",categoryRouts);
 app.use("/api", companyRoutes);
 app.use(fileUpload());
 app.use(express.static(path.join(__dirname, "Front-End")));

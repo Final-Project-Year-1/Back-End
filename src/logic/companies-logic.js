@@ -1,11 +1,13 @@
 import CompanyModel from "../models/company-model.js";
 import ErrorModel from "../models/error-model.js";
+import vacationLogic from "../logic/vacation-logic.js"
+import VacationModel from "../models/vacation-model.js";
 
 //We don't need this
 async function getTotalCompanies() {
     try {
-        const totalCompanies = await CompanyModel.countDocuments({});
-        return { totalCompanies };
+        const totalCompanies = await CompanyModel.countDocuments({ company: { $ne: "Cancelled" } });
+        return { totalCompanies: totalCompanies - 1 };
     } catch (err) {
         console.error("Error in getTotalCompanies:", err);
         throw new ErrorModel(err.status || 500, err.message || "Internal server error");
@@ -58,7 +60,8 @@ async function updateCompanyName(companyId, companyData) {
 }
 async function getAllCompanies() {
     try {
-        const companies = await CompanyModel.find({}, { _id: 1, company: 1 }).exec();
+        // מציאת כל החברות, לא כולל חברות בשם "Cancelled"
+        const companies = await CompanyModel.find({ company: { $ne: "Cancelled" } }, { _id: 1, company: 1 }).exec();
         return companies;
     } catch (err) {
         console.error("Error in getAllCompanies:", err);
@@ -67,7 +70,14 @@ async function getAllCompanies() {
 }
 async function deleteCompany(companyId) {
     const deletedCompany = await CompanyModel.findByIdAndDelete(companyId).exec();
-    if (!deletedCompany) throw new ErrorModel(404, `Company with id  ${companyId} not found`);
+    if (!deletedCompany) throw new ErrorModel(404, `Company with id ${companyId} not found`);
+
+    const vacations = await VacationModel.find({ companyName: companyId }).exec();
+
+    for (const vacation of vacations) {
+        await vacationLogic.deleteVacation(vacation._id);
+    }
+
     return deletedCompany;
 }
 export default {

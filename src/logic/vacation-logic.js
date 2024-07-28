@@ -10,9 +10,11 @@ import bookingLogic from "../logic/booking-logic.js"
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const CANCELLED_VACATION_ID = "000000000000000000000000";
+const CANCELLED_VACATION_IMAGE = "logo-vacationHub.png";
+
 
 async function getAllVacations() {
-    return VacationModel.find()
+    return VacationModel.find({ destination: { $ne: "Cancelled" } })
         .populate("companyName")
         .populate("tripCategory")
         .exec();
@@ -78,10 +80,6 @@ async function updateVacation(vacation) {
 
 
 async function deleteVacation(_id) {
-    // קבלת החופשה כדי לשמור את imageName
-    const vacation = await VacationModel.findById(_id).exec();
-    if (!vacation) throw new ErrorModel(404, `Vacation with _id ${_id} not found`);
-
     // יצירת חופשה מבוטלת אם היא לא קיימת
     await createCancelledVacation();
 
@@ -114,9 +112,9 @@ async function createCancelledVacation() {
         price: 0,
         groupOf: 1,
         vacationType: "Deleted",
-        companyName: "66a6181bdf91811f95d24e27",  // דוגמה לחברה
-        tripCategory: "66a3ca690aca3398927a017c",  // דוגמה לקטגוריה
-        imageName: "logo-vacationHub.png"
+        companyName: "66a6181bdf91811f95d24e27",  
+        tripCategory: "66a3ca690aca3398927a017c",  
+        imageName: CANCELLED_VACATION_IMAGE
     });
 
     await cancelledVacation.save();
@@ -125,7 +123,7 @@ async function createCancelledVacation() {
 async function getTotalVacations() {
     try {
         const totalVacations = await VacationModel.countDocuments({});
-        return { totalVacations };
+        return { totalVacations: totalVacations - 1 };
     } catch (err) {
         console.error("Error in getTotalVacations:", err);
         throw new ErrorModel(err.status || 500, err.message || "Internal server error");

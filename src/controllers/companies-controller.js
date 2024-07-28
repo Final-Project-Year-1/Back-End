@@ -55,7 +55,6 @@ router.get("/findCompany/:_id", verifyAdmin, async (request, response) => {
 router.put("/updateCompany/:id", verifyAdmin, async (req, res) => {
     try {
         const { id } = req.params;
-        const { newName } = req.body;
         const updatedCompany = await logic.updateCompanyName(id, req.body);
         res.status(200).json(updatedCompany);
     } catch (err) {
