@@ -35,17 +35,18 @@ router.get("/vacations/:_id", async (request, response) => {
     }
 });
 
-router.put("/vacations/:_id" , async (request, response) => {
+router.put("/vacations/:_id", async (request, response) => {
     try {
-        request.body._id = request.params._id;
-        request.body.image = request.files?.image;
-        const vacation = new VacationModel(request.body);
-        const updatedVacation = await logic.updateVacation(vacation);
+        const vacationId = request.params._id;
+        const vacationData = request.body;
+        vacationData.image = request.files?.image;
+        
+        const updatedVacation = await logic.updateVacation(vacationId, vacationData);
         response.json(updatedVacation);
     }
     catch (err) {
         console.log(err);
-        response.status(400).json(err);
+        response.status(err.status || 400).json(err);
     }
 });
 
