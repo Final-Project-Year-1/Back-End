@@ -60,10 +60,10 @@ router.get('/total-categories', verifyAdmin, async (req, res) => {
 });
 
 // מציאת קטגוריה לפי מזהה
-router.get('/find-category/:_id', verifyAdmin, async (req, res) => {
+router.get('/find-category/:_id', async (req, res) => {
     try {
         const category = await categoryLogic.findCategoryById(req.params._id);
-        res.json(category);
+        res.status(200).json(category);
     } catch (err) {
         res.status(err.status || 500).send({ message: err.message });
     }

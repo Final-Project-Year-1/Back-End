@@ -41,11 +41,11 @@ router.post("/addCompany", verifyAdmin, async (request, response) => {
         response.status(400).json(err);
     }
 });
-router.get("/findCompany/:_id", verifyAdmin, async (request, response) => {
+router.get("/findCompany/:_id", async (request, response) => {
     try {
         const _id = request.params._id;
         const company = await logic.findCompanyById(_id);
-        response.json(company);
+        response.status(200).json(company);
     }
     catch (err) {
         console.log(err);
