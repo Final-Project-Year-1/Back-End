@@ -72,13 +72,47 @@ async function updateVacation(vacation) {
         await vacation.image.mv(path.join(__dirname, "..", "assets", "images", "vacations", vacation.imageName));
         delete vacation.image;
     }
-
+    
     const updatedVacation = await VacationModel.findByIdAndUpdate(vacation._id, vacation, { returnOriginal: false }).exec();
     if (!updatedVacation) throw new ErrorModel(404, `Vacation with _id ${vacation._id} not found`);
 
     return updatedVacation;
 }
+// */async function updateVacation(vacation) {
+//     // Retrieve the current state of the vacation from the database
+//     const currentVacation = await VacationModel.findById(vacation._id);
+//     if (!currentVacation) throw new ErrorModel(404, `Vacation with _id ${vacation._id} not found`);
 
+//     // Validate vacation details
+//     const errors = vacation.validateSync();
+//     if (errors) throw new ErrorModel(400, errors.message);
+
+//     // Handle image update if there's a new image
+//     if (vacation.image) {
+//         const extension = vacation.image.name.substring(vacation.image.name.lastIndexOf("."));
+//         vacation.imageName = uuid() + extension;
+//         await vacation.image.mv(path.join(__dirname, "..", "assets", "images", "vacations", vacation.imageName));
+//         delete vacation.image;  // Remove the image object since it's now stored and path is updated
+//     }
+
+//     // Calculate the change in spots taken if any
+//     if (vacation.spotsTaken !== undefined && vacation.spotsTaken !== currentVacation.spotsTaken) {
+//         const spotsDifference = vacation.spotsTaken - currentVacation.spotsTaken;
+//         currentVacation.spotsTaken = vacation.spotsTaken;
+//         currentVacation.spotsLeft = currentVacation.groupOf - currentVacation.spotsTaken;
+
+//         // Check for overbooking
+//         if (currentVacation.spotsLeft < 0) {
+//             throw new ErrorModel(400, 'Overbooking error: more spots taken than available in the group.');
+//         }
+//     }
+
+//     // Update the vacation with the new details
+//     const updatedVacation = await VacationModel.findByIdAndUpdate(vacation._id, currentVacation, { new: true }).exec();
+//     if (!updatedVacation) throw new ErrorModel(404, `Failed to update vacation with _id ${vacation._id}`);
+
+//     return updatedVacation;
+// }
 
 async function deleteVacation(_id) {
     // יצירת חופשה מבוטלת אם היא לא קיימת
