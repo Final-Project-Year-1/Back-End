@@ -1,17 +1,18 @@
+
 import express from "express";
+import verifyAdmin from '../middleware/verify-admin.js';
+import verifyLoggedIn from '../middleware/verify-logged-in.js';
 import logic from '../logic/vacation-logic.js';
 import VacationModel from "../models/vacation-model.js";
 import path from 'path';
 import { fileURLToPath } from 'url';
-import verifyLoggedIn from "../middleware/verify-logged-in.js";
-import verifyAdmin from "../middleware/verify-admin.js";
 import ErrorModel from "../models/error-model.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const router = express.Router();
 
-router.get("/Allvacations", verifyAdmin,async (request, response) => {
+router.get("/Allvacations",async (request, response) => {
     try {
         const vacations = await logic.getAllVacations();
         response.json(vacations);
@@ -22,7 +23,7 @@ router.get("/Allvacations", verifyAdmin,async (request, response) => {
     }
 });
 
-router.get("/vacations/:_id", verifyAdmin, async (request, response) => {
+router.get("/vacations/:_id", async (request, response) => {
     try {
         const _id = request.params._id;
         const vacation = await logic.getOneVacation(_id);
@@ -34,7 +35,7 @@ router.get("/vacations/:_id", verifyAdmin, async (request, response) => {
     }
 });
 
-router.put("/vacations/:_id", verifyAdmin , async (request, response) => {
+router.put("/vacations/:_id" , async (request, response) => {
     try {
         request.body._id = request.params._id;
         request.body.image = request.files?.image;
@@ -48,7 +49,7 @@ router.put("/vacations/:_id", verifyAdmin , async (request, response) => {
     }
 });
 
-router.post("/vacations", verifyAdmin, async (request, response) => {
+router.post("/vacations", async (request, response) => {
     try {
         request.body.image = request.files?.image;
         const vacation = new VacationModel(request.body);
@@ -61,7 +62,7 @@ router.post("/vacations", verifyAdmin, async (request, response) => {
     }
 });
 
-router.delete("/vacations/:_id", verifyAdmin, async (request, response) => {
+router.delete("/vacations/:_id", async (request, response) => {
     try {
         const deletedVacation = await logic.deleteVacation(request.params._id);
         response.json(deletedVacation);
@@ -84,7 +85,7 @@ router.get("/vacations/images/:imageName" ,async (request, response) => {
 });
 
 //what is it doing? gets the sum of vacations
-router.get("/vacation/total-vacations", verifyAdmin, async (req, res) => {
+router.get("/vacation/total-vacations", async (req, res) => {
     try {
         const result = await logic.getTotalVacations();
         res.json(result);
@@ -97,7 +98,7 @@ router.get("/vacation/total-vacations", verifyAdmin, async (req, res) => {
     }
 });
 
-router.get('/vacation/vacations-per-company/:companyId',verifyLoggedIn, async (req, res) => {
+router.get('/vacation/vacations-per-company/:companyId', async (req, res) => {
     try {
         const result = await logic.getTotalVacationsByCompany(req.params.companyId);
         res.json(result);
@@ -110,7 +111,7 @@ router.get('/vacation/vacations-per-company/:companyId',verifyLoggedIn, async (r
     }
 });
 
-router.get('/top-vacations',verifyLoggedIn, async (req, res) => {
+router.get('/top-vacations', async (req, res) => {
     try {
         const result = await logic.getTopVacations();
         res.json(result);
@@ -122,8 +123,16 @@ router.get('/top-vacations',verifyLoggedIn, async (req, res) => {
         }
     }
 });
+router.get('/vacation-images', async (req, res) => {
+    try {
+        const result = await logic.getAllVacationImages();
+        res.json(result);
+    } catch (err) {
+        res.status(err.status || 500).send({ message: err.message || "Internal server error" });
+    }
+});
 
-router.get('/vacations-by-company',verifyLoggedIn, async (req, res) => {
+router.get('/vacations-by-company', async (req, res) => {
     try {
         const result = await logic.getVacationsByCompany();
         res.json(result);

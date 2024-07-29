@@ -64,6 +64,7 @@ const VacationSchema = new Schema({
     },
     imageName: {
         type: String,
+        required: true,
     },
 }, {
     versionKey: false,

@@ -46,6 +46,7 @@ async function createVacation(vacation) {
 
     return vacation.save();
 }
+
 async function updateGeneralVacationFields(vacationId) {
     try {
         console.log(`Updating general fields for vacation ${vacationId}`);
@@ -368,6 +369,20 @@ async function getAllDestinations() {
         throw new ErrorModel(err.status || 500, err.message || "Internal server error");
     }
 }
+async function getAllVacationImages() {
+    try {
+        const vacations = await VacationModel.find({}, 'imageName').exec();
+        const imageNames = vacations.map(vacation => vacation.imageName).filter(imageName => !!imageName); // סינון שמות תמונות לא חוקיים
+
+        return {
+            imageNames: imageNames,
+            totalImages: imageNames.length
+        };
+    } catch (err) {
+        console.error("Error in getAllVacationImages:", err);
+        throw new ErrorModel(err.status || 500, err.message || "Internal server error");
+    }
+}
 export default {
     getAllVacations,
     getOneVacation,
@@ -385,4 +400,5 @@ export default {
     updateGeneralVacationFields,
     searchVacationsByCriteria,
     getAllDestinations,
+    getAllVacationImages,
 };

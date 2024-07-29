@@ -6,7 +6,7 @@ import verifyAdmin from '../middleware/verify-admin.js';
 import CompanyModel from '../models/company-model.js';
 const router = express.Router();
 
-router.get('/total-companies',verifyLoggedIn, async (req, res) => {
+router.get('/total-companies',verifyAdmin, async (req, res) => {
     try {
         const result = await logic.getTotalCompanies();
         res.json(result);
@@ -19,7 +19,7 @@ router.get('/total-companies',verifyLoggedIn, async (req, res) => {
     }
 });
 
-router.get('/all-companies', verifyLoggedIn,async (req, res) => {
+router.get('/all-companies', verifyAdmin,async (req, res) => {
     try {
         const companies = await logic.getAllCompanies();
         res.json(companies);
