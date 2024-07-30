@@ -324,6 +324,105 @@ async function searchQuery(numOfPassengers, departureMonth, destination) {
         throw new ErrorModel(err.status || 500, err.message || "Internal server error");
     }
 }
+// async function searchQueryVacationsAdmin(companyId, departureMonth, destination) {
+//     if (!companyId && !departureMonth && !destination) {
+//         throw new ErrorModel(400, 'At least one search criterion must be provided');
+//     }
+
+//     try {
+//         // המרת departureMonth למספר ובדיקת תקינותו
+//         const month = departureMonth ? parseInt(departureMonth, 10) : null;
+//         if (departureMonth && isNaN(month)) {
+//             throw new ErrorModel(400, 'departureMonth must be a number');
+//         }
+
+//         const vacations = await VacationModel.find().populate("companyName").populate("tripCategory").exec();
+
+//         console.log("All vacations found:", vacations);
+
+//         // סינון החופשות לפי הפרמטרים שהוזנו
+//         const filteredVacations = vacations.filter(vacation => {
+//             const startMonth = vacation.startDate ? new Date(vacation.startDate).getMonth() + 1 : null;
+//             let matches = true;
+
+//             if (companyId) {
+//                 matches = matches && (vacation.companyName && vacation.companyName._id.toString() === companyId);
+//             }
+
+//             if (month) {
+//                 matches = matches && (startMonth === month);
+//             }
+
+//             if (destination) {
+//                 matches = matches && (vacation.destination && vacation.destination.toLowerCase() === destination.toLowerCase());
+//             }
+
+//             return matches;
+//         });
+
+//         if (!filteredVacations || filteredVacations.length === 0) {
+//             throw new ErrorModel(404, "No vacations found with the given criteria");
+//         }
+
+//         return filteredVacations;
+//     } catch (err) {
+//         console.error("Error in searchQueryVacationsAdmin:", err);
+//         throw new ErrorModel(err.status || 500, err.message || "Internal server error");
+//     }
+// }
+
+async function searchQueryVacationsAdmin(companyId, departureMonth, destination) {
+    try {
+        if (!companyId && !departureMonth && !destination) {
+            throw new ErrorModel(400, 'At least one search criterion must be provided');
+        }
+
+        // המרת departureMonth למספר ובדיקת תקינותו
+        const month = departureMonth ? parseInt(departureMonth, 10) : null;
+        if (departureMonth && isNaN(month)) {
+            throw new ErrorModel(400, 'departureMonth must be a number');
+        }
+
+        const vacations = await VacationModel.find().populate("companyName").populate("tripCategory").exec();
+        console.log("All vacations found:", vacations);
+
+        // סינון החופשות לפי הפרמטרים שהוזנו תוך התעלמות מחופשות עם יעד מבוטל
+        const filteredVacations = vacations.filter(vacation => {
+            const startMonth = vacation.startDate ? new Date(vacation.startDate).getMonth() + 1 : null;
+            let matches = true;
+
+            // Ensure vacation destination is not "Cancelled"
+            if (vacation.destination && vacation.destination.toLowerCase() === "cancelled") {
+                return false; // Skip this vacation
+            }
+
+            if (companyId) {
+                matches = matches && (vacation.companyName && vacation.companyName._id.toString() === companyId);
+            }
+
+            if (month) {
+                matches = matches && (startMonth === month);
+            }
+
+            if (destination) {
+                matches = matches && (vacation.destination && vacation.destination.toLowerCase() === destination.toLowerCase().trim());
+            }
+
+            return matches;
+        });
+
+        if (!filteredVacations || filteredVacations.length === 0) {
+            throw new ErrorModel(404, "No vacations found with the given criteria");
+        }
+
+        return filteredVacations;
+    } catch (err) {
+        console.error("Error in searchQueryVacationsAdmin:", err); // הצגת השגיאה המלאה
+        throw new ErrorModel(err.status || 500, err.message || "Internal server error");
+    }
+}
+
+
 
 async function searchVacationsByCriteria(companyId, minRating, numOfPassengers, departureMonth) {
     if (!numOfPassengers || !companyId || !minRating) {
@@ -383,17 +482,28 @@ async function getAllDestinations() {
 async function getAllVacationImages() {
     try {
         const vacations = await VacationModel.find({}, 'imageName').exec();
-        const imageNames = vacations.map(vacation => vacation.imageName).filter(imageName => !!imageName); // סינון שמות תמונות לא חוקיים
+
+        const imageNames = vacations.map(vacation => vacation.imageName).filter(imageName => !!imageName);
+
+        const uniqueImageNames = Array.from(new Set(imageNames));
+        const imageNameCounts = {};
+        imageNames.forEach(imageName => {
+            imageNameCounts[imageName] = (imageNameCounts[imageName] || 0) + 1;
+        });
 
         return {
-            imageNames: imageNames,
-            totalImages: imageNames.length
+            imageNames: uniqueImageNames,
+            totalImages: uniqueImageNames.length
         };
     } catch (err) {
         console.error("Error in getAllVacationImages:", err);
         throw new ErrorModel(err.status || 500, err.message || "Internal server error");
     }
 }
+
+
+
+
 export default {
     getAllVacations,
     getOneVacation,
@@ -412,4 +522,5 @@ export default {
     searchVacationsByCriteria,
     getAllDestinations,
     getAllVacationImages,
+    searchQueryVacationsAdmin,
 };

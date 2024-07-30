@@ -40,7 +40,7 @@ router.delete('/deleteCategory/:id', verifyAdmin, async (req, res) => {
 });
 
 // קבלת כל הקטגוריות
-router.get('/allCategories', verifyAdmin, async (req, res) => {
+router.get('/allCategories', async (req, res) => {
     try {
         const categories = await categoryLogic.getAllCategories();
         res.json(categories);

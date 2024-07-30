@@ -19,7 +19,7 @@ router.get('/total-companies',verifyAdmin, async (req, res) => {
     }
 });
 
-router.get('/all-companies', verifyAdmin,async (req, res) => {
+router.get('/all-companies',async (req, res) => {
     try {
         const companies = await logic.getAllCompanies();
         res.json(companies);

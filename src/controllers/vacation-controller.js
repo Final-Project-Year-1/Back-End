@@ -7,6 +7,7 @@ import VacationModel from "../models/vacation-model.js";
 import path from 'path';
 import { fileURLToPath } from 'url';
 import ErrorModel from "../models/error-model.js";
+import CompanyModel from "../models/company-model.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -50,6 +51,73 @@ router.put("/vacations/:_id", async (request, response) => {
     }
 });
 
+// router.get('/vac', async (req, res) => {
+//     const { companyId, departureMonth, destination } = req.body; // משתמשים ב-body של הבקשה
+
+//     try {
+//         // בדיקה אם לא הוזן שום פרמטר
+//         if (!companyId && !departureMonth && !destination) {
+//             throw new ErrorModel(400, 'At least one search criterion must be provided');
+//         }
+
+//         // בדיקה אם companyId הוא ObjectId תקין
+//         if (companyId && !mongoose.Types.ObjectId.isValid(companyId)) {
+//             throw new ErrorModel(400, 'Invalid companyId format');
+//         }
+
+//         const vacations = await logic.searchQueryVacationsAdmin(companyId, departureMonth, destination);
+
+//         res.json(vacations);
+//     } catch (err) {
+//         console.error("Error in GET /search-vacations:", err);
+//         if (err instanceof ErrorModel) {
+//             res.status(err.status).json({ error: err.message });
+//         } else {
+//             res.status(500).json({ error: "Internal server error" });
+//         }
+//     }
+// });
+
+router.post('/search-vacations-admin-query', async (req, res) => {
+    let { companyName, departureMonth, destination } = req.body; // משתמשים ב-body של הבקשה
+
+    try {
+        // פעולת trim על השדות שהוזנו
+        if (companyName) companyName = companyName.trim();
+        if (departureMonth) departureMonth = departureMonth.toString().trim();
+        if (destination) destination = destination.trim();
+
+        // בדיקה אם לא הוזן שום פרמטר
+        if (!companyName && !departureMonth && !destination) {
+            throw new ErrorModel(400, 'At least one search criterion must be provided');
+        }
+
+        console.log("Body parameters received:", { companyName, departureMonth, destination });
+
+        // חיפוש החברה לפי שם
+        let companyId = null;
+        if (companyName) {
+            const company = await CompanyModel.findOne({ company: { $regex: new RegExp(companyName, "i") } }).exec();
+            if (!company) {
+                throw new ErrorModel(404, `Company with name ${companyName} not found`);
+            }
+            companyId = company._id.toString();
+            console.log("Company found with ID:", companyId);
+        }
+
+        const vacations = await logic.searchQueryVacationsAdmin(companyId, departureMonth, destination);
+        console.log("Vacations found:", vacations);
+
+        res.json(vacations);
+    } catch (err) {
+        console.error("Error in POST /search-vacations-admin-query:", err); // הצגת השגיאה המלאה
+        if (err instanceof ErrorModel) {
+            res.status(err.status).json({ error: err.message });
+        } else {
+            res.status(500).json({ error: "Internal server error" });
+        }
+    }
+});
 router.post("/vacations", async (request, response) => {
     try {
         request.body.image = request.files?.image;
@@ -160,8 +228,7 @@ router.get('/top-rated-vacations', async (req, res) => {
     }
 });
 
-// נתיב לחיפוש חופשות לפי מספר נוסעים, חודש יציאה, חודש חזרה ויעד
-router.get('/search-vacations',  async (req, res) => {
+router.post('/search-vacations',  async (req, res) => {
     const groupOf = req.body.numOfPassengers
     const month = req.body.departureMonth
     const dest = req.body.destination
@@ -191,13 +258,12 @@ router.get('/search-vacations',  async (req, res) => {
 });
 
 
-router.get('/search-vacations-query2', async (req, res) => {
+router.post('/search-vacations-query2', async (req, res) => {
     const groupOf = req.body.numOfPassengers
     const company = req.body.companyId
     const rating = req.body.minRating
     const month = req.body.departureMonth
-    console.log("------------------")
-    console.log(company, rating,groupOf,month)
+
     try {
 
         if (!company || !rating || !groupOf) {
