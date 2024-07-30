@@ -112,6 +112,26 @@ router.get('/vacation/vacations-per-company/:companyId', async (req, res) => {
     }
 });
 
+router.get('/vacation/spots-left', async (req, res) => {
+    try {
+        const vacationId = req.body.vacationId;
+        const passengers = req.body.vacationId
+        
+        const result = await logic.getVacationSpotsLeft(vacationId, passengers);
+        if (result) {
+            res.status.apply(200).send('ok');
+            return
+        }
+        res.status(400).send('bad request');
+    } catch (err) {
+        if (err instanceof ErrorModel) {
+            res.status(err.status).json({ error: err.message });
+        } else {
+            res.status(500).json({ error: "Internal server error" });
+        }
+    }
+})
+
 router.get('/top-vacations', async (req, res) => {
     try {
         const result = await logic.getTopVacations();

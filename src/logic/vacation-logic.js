@@ -242,6 +242,22 @@ async function updateVacationSpots(vacationId, passengers) {
         throw new ErrorModel(err.status || 500, err.message || "Internal server error");
     }
 }
+
+async function getVacationSpotsLeft(vacationId, passengers) {
+    try {
+        const vacation = await VacationModel.findById(vacationId);
+        const spotsLeft = vacation.spotsLeft;
+
+        if (spotsLeft >= passengers) {
+            return true;
+        }
+        throw new ErrorModel(err.status || 500, err.message || "Invalid Number");
+    } catch (err) {
+        console.error("Error in getVacationSpotsLeft:", err);
+        throw new ErrorModel(err.status || 500, err.message || "Internal server error");
+    }
+}
+
 async function getTopRatedVacations(limit = 4) {
     try {
 
@@ -406,6 +422,7 @@ export default {
     getTotalVacationsByCompany,
     searchQuery,
     updateVacationSpots,
+    getVacationSpotsLeft,
     getTopRatedVacations,
     updateVacationRating,
     updateGeneralVacationFields,
