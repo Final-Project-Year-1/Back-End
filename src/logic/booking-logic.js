@@ -83,7 +83,14 @@ async function updateBooking(bookingId, bookingData) {
 
     const passengerDifference = newPassengers - oldPassengers;
 
-    await vacationLogic.updateVacationSpots(updatedBooking.vacationId, passengerDifference);
+    if (updatedBooking.status === "cancelled" && oldBooking.status !== "cancelled") {
+        await vacationLogic.updateVacationSpots(updatedBooking.vacationId, -oldPassengers);
+    } else if (updatedBooking.status !== "cancelled" && oldBooking.status === "cancelled") {
+        // אם ההזמנה לא בוטלה קודם וכעת כן בוטלה, נוריד את מספר הנוסעים מהחופשה
+        await vacationLogic.updateVacationSpots(updatedBooking.vacationId, newPassengers);
+    } else {
+        await vacationLogic.updateVacationSpots(updatedBooking.vacationId, passengerDifference);
+    }
 
     return updatedBooking;
 }
@@ -93,13 +100,19 @@ async function updateBookingByOrderNumber(orderNumber, bookingData) {
 
     const oldPassengers = oldBooking.Passengers;
     const newPassengers = bookingData.Passengers;
+    const passengerDifference = newPassengers - oldPassengers;
 
     const updatedBooking = await BookingModel.findOneAndUpdate({ OrderNumber: orderNumber }, bookingData, { new: true, runValidators: true }).exec();
     if (!updatedBooking) throw new ErrorModel(404, `Booking with OrderNumber ${orderNumber} not found`);
 
-    const passengerDifference = newPassengers - oldPassengers;
-
-    await vacationLogic.updateVacationSpots(updatedBooking.vacationId, passengerDifference);
+    if (updatedBooking.status === "cancelled" && oldBooking.status !== "cancelled") {
+        await vacationLogic.updateVacationSpots(updatedBooking.vacationId, -oldPassengers);
+    } else if (updatedBooking.status !== "cancelled" && oldBooking.status === "cancelled") {
+        // אם ההזמנה לא בוטלה קודם וכעת כן בוטלה, נוריד את מספר הנוסעים מהחופשה
+        await vacationLogic.updateVacationSpots(updatedBooking.vacationId, newPassengers);
+    } else {
+        await vacationLogic.updateVacationSpots(updatedBooking.vacationId, passengerDifference);
+    }
 
     return updatedBooking;
 }
