@@ -17,6 +17,7 @@ import apiKeysRoutes from './src/controllers/apiKey-controller.js';
 import fileUpload from "express-fileupload";
 import path from "path";
 import { fileURLToPath } from 'url';
+import multer from 'multer';
 import cors from "cors";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -38,6 +39,16 @@ app.use("/api", apiKeysRoutes);
 app.use(fileUpload());
 app.use(express.static(path.join(__dirname, "Front-End")));
 
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'uploads/');
+  },
+  filename: (req, file, cb) => {
+    cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
+  }
+});
+
+const upload = multer({ storage: storage });
 app.get('/', (req, res) => {
   res.send('Welcome to my server!');
 });
