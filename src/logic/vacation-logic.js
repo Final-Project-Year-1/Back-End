@@ -119,7 +119,6 @@ async function createCancelledVacation() {
     });
 
     await cancelledVacation.save();
-    return cancelledVacation;
 }
 async function getTotalVacations() {
     try {
