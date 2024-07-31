@@ -12,7 +12,6 @@ router.post("/vacation/reviews", verifyLoggedIn, async (request, response) => {
         const addedReview = await logic.createReview(review);
         response.status(201).json(addedReview);
     } catch (err) {
-        console.log(err);
         response.status(400).json(err);
     }
 });
@@ -22,7 +21,6 @@ router.get("/vacation/reviews", verifyLoggedIn, async (request, response) => {
         const reviews = await logic.getAllReviews();
         response.json(reviews);
     } catch (err) {
-        console.log(err);
         response.status(400).json(err);
     }
 });
@@ -32,7 +30,6 @@ router.delete("/vacation/reviews/:id", verifyLoggedIn, async (request, response)
         const deletedReview = await logic.deleteReview(request.params.id);
         response.json(deletedReview);
     } catch (err) {
-        console.log(err);
         response.status(400).json(err);
     }
 });
@@ -42,7 +39,6 @@ router.get("/users/reviews/:userId", verifyAdmin, async (request, response) => {
         const reviews = await logic.getReviewsByUserId(request.params.userId);
         response.json(reviews);
     } catch (err) {
-        console.log(err);
         response.status(400).json(err);
     }
 });
@@ -52,7 +48,6 @@ router.put("/vacation/reviews/:id", verifyLoggedIn, async (request, response) =>
         const updatedReview = await logic.updateReview(request.params.id, request.body);
         response.json(updatedReview);
     } catch (err) {
-        console.log(err);
         response.status(400).json(err);
     }
 });
@@ -63,7 +58,6 @@ router.get("/vacation/reviews/:id", async (request, response) => {
         const reviews = await logic.getReviewByVacationId(request.params.id);
         response.json(reviews);
     } catch (err) {
-        console.log(err);
         response.status(400).json(err);
     }
 });

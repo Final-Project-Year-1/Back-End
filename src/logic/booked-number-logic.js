@@ -15,7 +15,6 @@ async function getTopBookedCompany() {
 
         return topCompanies;
     } catch (err) {
-        console.error("Error in getTopBookedCompanies:", err);
         throw new ErrorModel(err.status || 500, err.message || "Internal server error");
     }
 }
@@ -55,7 +54,6 @@ async function getBookingsByCompany() {
 
         return result;
     } catch (err) {
-        console.error("Error in getBookingsByCompany:", err);
         throw new ErrorModel(err.status || 500, err.message || "Internal server error");
     }
 }

@@ -11,7 +11,6 @@ async function getTotalCategories() {
 }
 async function createCategory(category) {
     try {
-        // בדוק אם שם החברה כבר קיים באופן לא רגיש לגודל אותיות
         const existingCategory = await CategoryModel.findOne({ 
             category: { $regex: new RegExp(`^${category.category}$`, 'i') } 
         });
@@ -19,14 +18,10 @@ async function createCategory(category) {
         if (existingCategory) {
             throw new ErrorModel(400, `Category with name ${category.category} already exists`);
         }
-
-        // שמור את החברה במסד הנתונים
         await category.save();
 
         return category;
     } catch (err) {
-        // ניהול שגיאות
-        console.error("Error creating Category:", err);
         throw new ErrorModel(err.status || 500, err.message || "Internal server error");
     }
 }

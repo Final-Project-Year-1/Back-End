@@ -63,7 +63,6 @@ async function getBookingsByCompanyByMonth() {
             }
         ]);
 
-        console.log("Aggregation Result:", result); // Log the result for debugging
 
         if (!result || result.length === 0) {
             throw new ErrorModel(404, "No bookings found");
@@ -71,7 +70,6 @@ async function getBookingsByCompanyByMonth() {
 
         return result;
     } catch (err) {
-        console.error("Error in getBookingsByCompanyByMonth:", err);
         throw new ErrorModel(err.status || 500, err.message || "Internal server error");
     }
 }
@@ -133,7 +131,6 @@ async function getBookingsByMonthForCompany(companyId) {
             bookings: result
         };
     } catch (err) {
-        console.error("Error in getBookingsByMonthForCompany:", err);
         throw new ErrorModel(err.status || 500, err.message || "Internal server error");
     }
 }
@@ -167,7 +164,6 @@ async function getTotalBookingsByMonth(month) {
             totalBookings: result[0].totalBookings
         };
     } catch (err) {
-        console.error("Error in getTotalBookingsByMonth:", err);
         throw new ErrorModel(err.status || 500, err.message || "Internal server error");
     }
 }

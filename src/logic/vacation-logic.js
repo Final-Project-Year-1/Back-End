@@ -49,16 +49,13 @@ async function createVacation(vacation) {
 
 async function updateGeneralVacationFields(vacationId) {
     try {
-        console.log(`Updating general fields for vacation ${vacationId}`);
         const vacation = await VacationModel.findById(vacationId);
         if (!vacation) throw new ErrorModel(404, `Vacation with id ${vacationId} not found`);
 
         await vacation.save();
-        console.log(`General fields for vacation ${vacationId} updated`);
 
         return vacation;
     } catch (err) {
-        console.error("Error in updateGeneralVacationFields:", err);
         throw new ErrorModel(err.status || 500, err.message || "Internal server error");
     }
 }
@@ -66,15 +63,13 @@ async function updateVacation(vacationId, vacationData) {
     const existingVacation = await VacationModel.findById(vacationId).exec();
     if (!existingVacation) throw new ErrorModel(404, `Vacation with _id ${vacationId} not found`);
 
-    // Validate groupOf and spotsTaken
     if (vacationData.groupOf < existingVacation.spotsTaken) {
         throw new ErrorModel(400, "groupOf cannot be less than spotsTaken");
     }
 
-    // Update spotsLeft if groupOf is greater than or equal to spotsTaken
     if (vacationData.groupOf >= existingVacation.spotsTaken) {
         vacationData.spotsLeft = vacationData.groupOf - existingVacation.spotsTaken;
-        vacationData.spotsTaken = existingVacation.spotsTaken; // retain the original spotsTaken
+        vacationData.spotsTaken = existingVacation.spotsTaken; 
     }
 
     if (vacationData.image) {
@@ -92,20 +87,14 @@ async function updateVacation(vacationId, vacationData) {
 
 
 async function deleteVacation(_id) {
-    // יצירת חופשה מבוטלת אם היא לא קיימת
     await createCancelledVacation();
 
-    // מחיקת חופשה
     const deletedVacation = await VacationModel.findByIdAndDelete(_id).exec();
     if (!deletedVacation) throw new ErrorModel(404, `Vacation with _id ${_id} not found`);
-
-    // קבלת כל ההזמנות עם איידי של החופשה
     const bookings = await bookingLogic.getBookingByVacationId(_id);
-
-    // שינוי הסטטוס של כל הזמנה ל-"cancelled" ועדכון איידי של החופשה לחופשה מבוטלת
     for (const booking of bookings) {
         booking.status = "cancelled";
-        booking.vacationId = CANCELLED_VACATION_ID;  // שינוי איידי לחופשה מבוטלת
+        booking.vacationId = CANCELLED_VACATION_ID;  
         await booking.save();
     }
 
@@ -137,7 +126,6 @@ async function getTotalVacations() {
         const totalVacations = await VacationModel.countDocuments({});
         return { totalVacations: totalVacations - 1 };
     } catch (err) {
-        console.error("Error in getTotalVacations:", err);
         throw new ErrorModel(err.status || 500, err.message || "Internal server error");
     }
 }
@@ -164,7 +152,6 @@ async function getTotalVacationsByCompany(companyId) {
         const totalVacations = vacations.length;
         return { companyId: company._id, companyName: company.company, totalVacations, vacations: detailedVacations };
     } catch (err) {
-        console.error("Error in getTotalVacationsByCompany:", err);
         throw new ErrorModel(err.status || 500, err.message || "Internal server error");
     }
 }
@@ -180,7 +167,6 @@ async function getTopVacations() {
 
         return topCompanies;
     } catch (err) {
-        console.error("Error in getTopCompany:", err);
         throw new ErrorModel(err.status || 500, err.message || "Internal server error");
     }
 }
@@ -219,7 +205,6 @@ async function getVacationsByCompany() {
 
         return result;
     } catch (err) {
-        console.error("Error in getVacationsByCompany:", err);
         throw new ErrorModel(err.status || 500, err.message || "Internal server error");
     }
 }
@@ -238,7 +223,6 @@ async function updateVacationSpots(vacationId, passengers) {
 
         return vacation;
     } catch (err) {
-        console.error("Error in updateVacationSpots:", err);
         throw new ErrorModel(err.status || 500, err.message || "Internal server error");
     }
 }
@@ -266,13 +250,11 @@ async function getTopRatedVacations(limit = 4) {
 
         return allTopVacations;
     } catch (err) {
-        console.error("Error in getTopRatedVacations:", err);
         throw new ErrorModel(err.status || 500, err.message || "Internal server error");
     }
 }
 async function updateVacationRating(vacationId) {
     try {
-        console.log(`Updating rating for vacation ${vacationId}`);
         const reviews = await ReviewModel.find({ vacationId }).exec();
         if (reviews.length === 0) throw new ErrorModel(404, `No reviews found for vacation with id ${vacationId}`);
         
@@ -287,7 +269,6 @@ async function updateVacationRating(vacationId) {
 
         return vacation;
     } catch (err) {
-        console.error("Error in updateVacationRating:", err);
         throw new ErrorModel(err.status || 500, err.message || "Internal server error");
     }
 }
@@ -320,80 +301,26 @@ async function searchQuery(numOfPassengers, departureMonth, destination) {
 
         return filteredVacations;
     } catch (err) {
-        console.error("Error in searchQuery:", err);
         throw new ErrorModel(err.status || 500, err.message || "Internal server error");
     }
 }
-// async function searchQueryVacationsAdmin(companyId, departureMonth, destination) {
-//     if (!companyId && !departureMonth && !destination) {
-//         throw new ErrorModel(400, 'At least one search criterion must be provided');
-//     }
-
-//     try {
-//         // המרת departureMonth למספר ובדיקת תקינותו
-//         const month = departureMonth ? parseInt(departureMonth, 10) : null;
-//         if (departureMonth && isNaN(month)) {
-//             throw new ErrorModel(400, 'departureMonth must be a number');
-//         }
-
-//         const vacations = await VacationModel.find().populate("companyName").populate("tripCategory").exec();
-
-//         console.log("All vacations found:", vacations);
-
-//         // סינון החופשות לפי הפרמטרים שהוזנו
-//         const filteredVacations = vacations.filter(vacation => {
-//             const startMonth = vacation.startDate ? new Date(vacation.startDate).getMonth() + 1 : null;
-//             let matches = true;
-
-//             if (companyId) {
-//                 matches = matches && (vacation.companyName && vacation.companyName._id.toString() === companyId);
-//             }
-
-//             if (month) {
-//                 matches = matches && (startMonth === month);
-//             }
-
-//             if (destination) {
-//                 matches = matches && (vacation.destination && vacation.destination.toLowerCase() === destination.toLowerCase());
-//             }
-
-//             return matches;
-//         });
-
-//         if (!filteredVacations || filteredVacations.length === 0) {
-//             throw new ErrorModel(404, "No vacations found with the given criteria");
-//         }
-
-//         return filteredVacations;
-//     } catch (err) {
-//         console.error("Error in searchQueryVacationsAdmin:", err);
-//         throw new ErrorModel(err.status || 500, err.message || "Internal server error");
-//     }
-// }
 
 async function searchQueryVacationsAdmin(companyId, departureMonth, destination) {
     try {
         if (!companyId && !departureMonth && !destination) {
             throw new ErrorModel(400, 'At least one search criterion must be provided');
         }
-
-        // המרת departureMonth למספר ובדיקת תקינותו
         const month = departureMonth ? parseInt(departureMonth, 10) : null;
         if (departureMonth && isNaN(month)) {
             throw new ErrorModel(400, 'departureMonth must be a number');
         }
 
         const vacations = await VacationModel.find().populate("companyName").populate("tripCategory").exec();
-        console.log("All vacations found:", vacations);
-
-        // סינון החופשות לפי הפרמטרים שהוזנו תוך התעלמות מחופשות עם יעד מבוטל
         const filteredVacations = vacations.filter(vacation => {
             const startMonth = vacation.startDate ? new Date(vacation.startDate).getMonth() + 1 : null;
             let matches = true;
-
-            // Ensure vacation destination is not "Cancelled"
             if (vacation.destination && vacation.destination.toLowerCase() === "cancelled") {
-                return false; // Skip this vacation
+                return false; 
             }
 
             if (companyId) {
@@ -417,7 +344,6 @@ async function searchQueryVacationsAdmin(companyId, departureMonth, destination)
 
         return filteredVacations;
     } catch (err) {
-        console.error("Error in searchQueryVacationsAdmin:", err); // הצגת השגיאה המלאה
         throw new ErrorModel(err.status || 500, err.message || "Internal server error");
     }
 }
@@ -442,7 +368,6 @@ async function searchVacationsByCriteria(companyId, minRating, numOfPassengers, 
 
         const vacations = await VacationModel.find().populate("companyName").populate("tripCategory").exec();
 
-        console.log("All vacations found:", vacations);
 
         const filteredVacations = vacations.filter(vacation => {
             const startMonth = vacation.startDate ? new Date(vacation.startDate).getMonth() + 1 : null;
@@ -462,7 +387,6 @@ async function searchVacationsByCriteria(companyId, minRating, numOfPassengers, 
 
         return filteredVacations;
     } catch (err) {
-        console.error("Error in searchVacationsByCriteria:", err);
         throw new ErrorModel(err.status || 500, err.message || "Internal server error");
     }
 }
@@ -475,7 +399,6 @@ async function getAllDestinations() {
     
         return { destinations, destinationCount };
     } catch (err) {
-        console.error("Error in getAllDestinations:", err);
         throw new ErrorModel(err.status || 500, err.message || "Internal server error");
     }
 }
@@ -496,7 +419,6 @@ async function getAllVacationImages() {
             totalImages: uniqueImageNames.length
         };
     } catch (err) {
-        console.error("Error in getAllVacationImages:", err);
         throw new ErrorModel(err.status || 500, err.message || "Internal server error");
     }
 }

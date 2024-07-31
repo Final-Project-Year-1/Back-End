@@ -37,7 +37,6 @@ router.post("/addCompany", verifyAdmin, async (request, response) => {
         const addedCompany = await logic.createCompany(company);
         response.status(201).json(addedCompany);
     } catch (err) {
-        console.log(err);
         response.status(400).json(err);
     }
 });
@@ -48,7 +47,6 @@ router.get("/findCompany/:_id", async (request, response) => {
         response.status(200).json(company);
     }
     catch (err) {
-        console.log(err);
         response.status(400).json(err);
     }
 });
@@ -58,7 +56,6 @@ router.put("/updateCompany/:id", verifyAdmin, async (req, res) => {
         const updatedCompany = await logic.updateCompanyName(id, req.body);
         res.status(200).json(updatedCompany);
     } catch (err) {
-        console.log(err);
         res.status(400).json({ message: err.message });
     }
 });
@@ -68,7 +65,6 @@ router.delete("/deleteCompany/:id", verifyAdmin, async (req, res) => {
         const result = await logic.deleteCompany(id);
         res.status(200).json(result);
     } catch (err) {
-        console.log(err);
         res.status(400).json({ message: err.message });
     }
 });

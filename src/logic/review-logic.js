@@ -5,10 +5,8 @@ import UserModel from '../models/user-model.js';
 import vacationLogic from '../logic/vacation-logic.js';
 
 async function createReview(review) {
-    console.log("Starting createReview function");
     const errors = review.validateSync();
     if (errors) {
-        console.error("Validation errors:", errors.message);
         throw new ErrorModel(400, errors.message);
     }
     const savedReview = await review.save();
@@ -28,7 +26,6 @@ async function updateReview(reviewId, reviewData) {
     return updatedReview;
 }
 async function deleteReview(reviewId) {
-    console.log("Starting deleteReview function");
     const deletedReview = await ReviewModel.findByIdAndDelete(reviewId).exec();
     if (!deletedReview) throw new ErrorModel(404, `Review with id  ${reviewId} not found`);
     await vacationLogic.updateVacationRating(deletedReview.vacationId);

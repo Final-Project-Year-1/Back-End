@@ -5,7 +5,7 @@ import UserModel from "./user-model.js";
 const BookingSchema = new Schema({
     vacationId: {
         type: Schema.Types.ObjectId,
-        ref: "VacationModel", // object id of VacatioNModel 
+        ref: "VacationModel",
         required: true 
       },
       userId: {
@@ -29,7 +29,7 @@ const BookingSchema = new Schema({
         required: true
       },
       OrderNumber: {
-        type: String, // שדה מספר ההזמנה הוא String
+        type: String, 
     }
 },{
     versionKey: false,
@@ -44,12 +44,6 @@ BookingSchema.virtual("user", {
     justOne: true
 });
 
-// BookingSchema.virtual("company", {
-//   ref: "CompanyModel", 
-//   localField: "companyName",
-//   foreignField: "_id",
-//   justOne: true
-// });
 
 BookingSchema.virtual("vacation", {
     ref: "VacationModel",
