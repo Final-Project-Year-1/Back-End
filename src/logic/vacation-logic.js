@@ -130,31 +130,33 @@ async function getTotalVacations() {
     }
 }
 
-async function getTotalVacationsByCompany(companyId) {
-    try {
-        const company = await CompanyModel.findById(companyId);
-        if (!company) {
-            throw new ErrorModel(404, `Company with id ${companyId} not found`);
-        }
+// 6
+// async function getTotalVacationsByCompany(companyId) {
+//     try {
+//         const company = await CompanyModel.findById(companyId);
+//         if (!company) {
+//             throw new ErrorModel(404, `Company with id ${companyId} not found`);
+//         }
 
-        const vacations = await VacationModel.find({ companyName: companyId }, '_id');
+//         const vacations = await VacationModel.find({ companyName: companyId }, '_id');
 
-        const detailedVacations = await Promise.all(vacations.map(async (vacation) => {
-            const detailedVacation = await getOneVacation(vacation._id);
-            return {
-                vacationId: detailedVacation._id,
-                vacationName: detailedVacation.name,
-                vacationDescription: detailedVacation.description,
-                vacationDestnation: detailedVacation.destination,
-            };
-        }));
+//         const detailedVacations = await Promise.all(vacations.map(async (vacation) => {
+//             const detailedVacation = await getOneVacation(vacation._id);
+//             return {
+//                 vacationId: detailedVacation._id,
+//                 vacationName: detailedVacation.name,
+//                 vacationDescription: detailedVacation.description,
+//                 vacationDestnation: detailedVacation.destination,
+//             };
+//         }));
 
-        const totalVacations = vacations.length;
-        return { companyId: company._id, companyName: company.company, totalVacations, vacations: detailedVacations };
-    } catch (err) {
-        throw new ErrorModel(err.status || 500, err.message || "Internal server error");
-    }
-}
+//         const totalVacations = vacations.length;
+//         return { companyId: company._id, companyName: company.company, totalVacations, vacations: detailedVacations };
+//     } catch (err) {
+//         throw new ErrorModel(err.status || 500, err.message || "Internal server error");
+//     }
+// }
+// 5
 async function getTopVacations() {
     try {
         const vacationsByCompany = await getVacationsByCompany();
@@ -170,6 +172,7 @@ async function getTopVacations() {
         throw new ErrorModel(err.status || 500, err.message || "Internal server error");
     }
 }
+// 4
 async function getVacationsByCompany() {
     try {
         const result = await CompanyModel.aggregate([
@@ -226,6 +229,7 @@ async function updateVacationSpots(vacationId, passengers) {
         throw new ErrorModel(err.status || 500, err.message || "Internal server error");
     }
 }
+// 3
 async function getTopRatedVacations(limit = 4) {
     try {
 
@@ -315,13 +319,13 @@ async function searchQueryVacationsAdmin(companyId, departureMonth, destination)
             throw new ErrorModel(400, 'departureMonth must be a number');
         }
 
-        const vacations = await VacationModel.find().populate("companyName").populate("tripCategory").exec();
+        const vacations = await VacationModel.find().populate("companyName").populate("tripCategory").exec(); // to include
         const filteredVacations = vacations.filter(vacation => {
             const startMonth = vacation.startDate ? new Date(vacation.startDate).getMonth() + 1 : null;
             let matches = true;
             if (vacation.destination && vacation.destination.toLowerCase() === "cancelled") {
                 return false; 
-            }
+            }  
 
             if (companyId) {
                 matches = matches && (vacation.companyName && vacation.companyName._id.toString() === companyId);
@@ -349,64 +353,65 @@ async function searchQueryVacationsAdmin(companyId, departureMonth, destination)
 }
 
 
+// 1
+// async function searchVacationsByCriteria(companyId, minRating, numOfPassengers, departureMonth) {
+//     if (!numOfPassengers || !companyId || !minRating) {
+//         throw new ErrorModel(400, 'All parameters are required: companyId, minRating, numOfPassengers');
+//     }
 
-async function searchVacationsByCriteria(companyId, minRating, numOfPassengers, departureMonth) {
-    if (!numOfPassengers || !companyId || !minRating) {
-        throw new ErrorModel(400, 'All parameters are required: companyId, minRating, numOfPassengers');
-    }
+//     try {
+//         const passengers = parseInt(numOfPassengers, 10);
+//         const rating = parseFloat(minRating);
 
-    try {
-        const passengers = parseInt(numOfPassengers, 10);
-        const rating = parseFloat(minRating);
+//         if (isNaN(passengers)) {
+//             throw new ErrorModel(400, 'numOfPassengers must be a number');
+//         }
+//         if (isNaN(rating)) {
+//             throw new ErrorModel(400, 'minRating must be a number');
+//         }
 
-        if (isNaN(passengers)) {
-            throw new ErrorModel(400, 'numOfPassengers must be a number');
-        }
-        if (isNaN(rating)) {
-            throw new ErrorModel(400, 'minRating must be a number');
-        }
-
-        const vacations = await VacationModel.find().populate("companyName").populate("tripCategory").exec();
+//         const vacations = await VacationModel.find().populate("companyName").populate("tripCategory").exec();
 
 
-        const filteredVacations = vacations.filter(vacation => {
-            const startMonth = vacation.startDate ? new Date(vacation.startDate).getMonth() + 1 : null;
-            const matches = vacation.companyName._id.toString() === companyId &&
-                            vacation.rating >= rating &&
-                            passengers <= vacation.spotsLeft;
+//         const filteredVacations = vacations.filter(vacation => {
+//             const startMonth = vacation.startDate ? new Date(vacation.startDate).getMonth() + 1 : null;
+//             const matches = vacation.companyName._id.toString() === companyId &&
+//                             vacation.rating >= rating &&
+//                             passengers <= vacation.spotsLeft;
 
-            if (departureMonth) {
-                return matches && startMonth === parseInt(departureMonth, 10);
-            }
-            return matches;
-        });
+//             if (departureMonth) {
+//                 return matches && startMonth === parseInt(departureMonth, 10);
+//             }
+//             return matches;
+//         });
 
-        if (!filteredVacations || filteredVacations.length === 0) {
-            throw new ErrorModel(404, "No vacations found with the given criteria");
-        }
+//         if (!filteredVacations || filteredVacations.length === 0) {
+//             throw new ErrorModel(404, "No vacations found with the given criteria");
+//         }
 
-        return filteredVacations;
-    } catch (err) {
-        throw new ErrorModel(err.status || 500, err.message || "Internal server error");
-    }
-}
-
-async function getAllDestinations() {
-    try {
-        const vacations = await getAllVacations();
-        const destinations = [...new Set(vacations.map(vacation => vacation.destination))];
-        const destinationCount = destinations.length;
+//         return filteredVacations;
+//     } catch (err) {
+//         throw new ErrorModel(err.status || 500, err.message || "Internal server error");
+//     }
+// }
+// 2
+// async function getAllDestinations() {
+//     try {
+//         const vacations = await getAllVacations();
+//         const destinations = [...new Set(vacations.map(vacation => vacation.destination))];
+//         const destinationCount = destinations.length;
     
-        return { destinations, destinationCount };
-    } catch (err) {
-        throw new ErrorModel(err.status || 500, err.message || "Internal server error");
-    }
-}
+//         return { destinations, destinationCount };
+//     } catch (err) {
+//         throw new ErrorModel(err.status || 500, err.message || "Internal server error");
+//     }
+// }
+
 async function getAllVacationImages() {
     try {
         const vacations = await VacationModel.find({}, 'imageName').exec();
 
-        const imageNames = vacations.map(vacation => vacation.imageName).filter(imageName => !!imageName);
+        const imageNames = vacations.map(vacation => vacation.imageName).filter(imageName => !!imageName); // null, undifined and etc...
 
         const uniqueImageNames = Array.from(new Set(imageNames));
 
@@ -431,14 +436,14 @@ export default {
     deleteVacation,
     getTotalVacations,
     getTopVacations,
-    getTotalVacationsByCompany,
+    // getTotalVacationsByCompany,
     searchQuery,
     updateVacationSpots,
     getTopRatedVacations,
     updateVacationRating,
     updateGeneralVacationFields,
-    searchVacationsByCriteria,
-    getAllDestinations,
+    // searchVacationsByCriteria,
+    // getAllDestinations,
     getAllVacationImages,
     searchQueryVacationsAdmin,
 };

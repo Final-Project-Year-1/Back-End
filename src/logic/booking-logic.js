@@ -48,13 +48,14 @@ async function getAllBookings() {
         })
         .exec();
 }
-
+// 2
 async function deleteBooking(bookingId) {
     const deletedBooking = await BookingModel.findByIdAndDelete(bookingId).exec();
     if (!deletedBooking) throw new ErrorModel(404, `Booking with id ${bookingId} not found`);
     await vacationLogic.updateVacationSpots(deletedBooking.vacationId, (-1)*deletedBooking.Passengers);
     return deletedBooking;
 }
+// 1
 async function deleteBookingByOrderNumber(orderNumber) {
     const deletedBooking = await BookingModel.findOneAndDelete({ OrderNumber: orderNumber }).exec();
     if (!deletedBooking) throw new ErrorModel(404, `Booking with OrderNumber ${orderNumber} not found`);
@@ -107,6 +108,7 @@ async function updateBookingByOrderNumber(orderNumber, bookingData) {
 
     return updatedBooking;
 }
+// 3
 async function getBookingByUserId(userId) {
     return BookingModel.find({userId})
         .populate({
@@ -119,6 +121,7 @@ async function getBookingByUserId(userId) {
         .populate('userId')
         .exec();
 }
+
 async function getBookingByOrderNumber(orderNumber) {
     return BookingModel.findOne({ OrderNumber: orderNumber })
         .populate({
@@ -131,6 +134,7 @@ async function getBookingByOrderNumber(orderNumber) {
         .populate('userId')
         .exec();
 }
+// 4
 async function getBookingByVacationId(vacationId) {
     return BookingModel.find({vacationId})
     .populate({

@@ -126,18 +126,18 @@ router.get("/vacation/total-vacations", async (req, res) => {
     }
 });
 
-router.get('/vacation/vacations-per-company/:companyId', async (req, res) => {
-    try {
-        const result = await logic.getTotalVacationsByCompany(req.params.companyId);
-        res.json(result);
-    } catch (err) {
-        if (err instanceof ErrorModel) {
-            res.status(err.status).json({ error: err.message });
-        } else {
-            res.status(500).json({ error: "Internal server error" });
-        }
-    }
-});
+// router.get('/vacation/vacations-per-company/:companyId', async (req, res) => {
+//     try {
+//         const result = await logic.getTotalVacationsByCompany(req.params.companyId);
+//         res.json(result);
+//     } catch (err) {
+//         if (err instanceof ErrorModel) {
+//             res.status(err.status).json({ error: err.message });
+//         } else {
+//             res.status(500).json({ error: "Internal server error" });
+//         }
+//     }
+// });
 
 router.get('/top-vacations', async (req, res) => {
     try {
@@ -214,45 +214,45 @@ router.post('/search-vacations',  async (req, res) => {
 });
 
 
-router.post('/search-vacations-query2', async (req, res) => {
-    const groupOf = req.body.numOfPassengers
-    const company = req.body.companyId
-    const rating = req.body.minRating
-    const month = req.body.departureMonth
+// router.post('/search-vacations-query2', async (req, res) => {
+//     const groupOf = req.body.numOfPassengers
+//     const company = req.body.companyId
+//     const rating = req.body.minRating
+//     const month = req.body.departureMonth
 
-    try {
+//     try {
 
-        if (!company || !rating || !groupOf) {
-            throw new ErrorModel(400, 'All parameters are required: companyId, minRating, numOfPassengers');
-        }
+//         if (!company || !rating || !groupOf) {
+//             throw new ErrorModel(400, 'All parameters are required: companyId, minRating, numOfPassengers');
+//         }
 
-        const passengers = parseInt(groupOf, 10);
-        const rate = parseInt(rating, 10);
+//         const passengers = parseInt(groupOf, 10);
+//         const rate = parseInt(rating, 10);
 
-        if (isNaN(passengers)) {
-            throw new ErrorModel(400, 'numOfPassengers must be a number');
-        }
-        if (isNaN(rate)) {
-            throw new ErrorModel(400, 'minRating must be a number');
-        }
-        const result = await logic.searchVacationsByCriteria(company,rating,groupOf,month);
+//         if (isNaN(passengers)) {
+//             throw new ErrorModel(400, 'numOfPassengers must be a number');
+//         }
+//         if (isNaN(rate)) {
+//             throw new ErrorModel(400, 'minRating must be a number');
+//         }
+//         const result = await logic.searchVacationsByCriteria(company,rating,groupOf,month);
 
-        res.json(result);
-    } catch (err) {
-        if (err instanceof ErrorModel) {
-            res.status(err.status).json({ error: err.message });
-        } else {
-            res.status(500).json({ error: "Internal server error" });
-        }
-    }
-});
-router.get('/vacations/destinations/countries', async (req, res) => {
-    try {
-        const countries = await logic.getAllDestinations();
-        res.json(countries);
-    } catch (err) {
-        res.status(err.status || 500).json({ message: err.message });
-    }
-});
+//         res.json(result);
+//     } catch (err) {
+//         if (err instanceof ErrorModel) {
+//             res.status(err.status).json({ error: err.message });
+//         } else {
+//             res.status(500).json({ error: "Internal server error" });
+//         }
+//     }
+// });
+// router.get('/vacations/destinations/countries', async (req, res) => {
+//     try {
+//         const countries = await logic.getAllDestinations();
+//         res.json(countries);
+//     } catch (err) {
+//         res.status(err.status || 500).json({ message: err.message });
+//     }
+// });
 
 export default router;

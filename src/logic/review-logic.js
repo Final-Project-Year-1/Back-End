@@ -5,7 +5,7 @@ import UserModel from '../models/user-model.js';
 import vacationLogic from '../logic/vacation-logic.js';
 
 async function createReview(review) {
-    const errors = review.validateSync();
+    const errors = review.validateSync(); // if we followed the scheme rules...
     if (errors) {
         throw new ErrorModel(400, errors.message);
     }
@@ -41,7 +41,7 @@ async function getAllReviews() {
     .populate({
         path: 'vacationId',
         populate: [
-            { path: 'companyName', model: 'CompanyModel' },
+            { path: 'companyName', model: 'CompanyModel'},
             { path: 'tripCategory', model: 'CategoryModel' }
         ]
     })

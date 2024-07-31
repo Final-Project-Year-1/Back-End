@@ -15,7 +15,7 @@ async function getBookingsByCompanyByMonth() {
             {
                 $lookup: {
                     from: 'vacations',
-                    localField: 'vacationId',
+                    localField: 'vacationId', // im here
                     foreignField: '_id',
                     as: 'vacation'
                 }
@@ -74,7 +74,7 @@ async function getBookingsByCompanyByMonth() {
     }
 }
 
-
+// 1
 async function getBookingsByMonthForCompany(companyId) {
     try {
         const company = await CompanyModel.findById(companyId);
