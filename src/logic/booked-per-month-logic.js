@@ -134,7 +134,7 @@ async function getBookingsByMonthForCompany(companyId) {
         throw new ErrorModel(err.status || 500, err.message || "Internal server error");
     }
 }
-
+//2
 async function getTotalBookingsByMonth(month) {
     try {
         const result = await BookingModel.aggregate([
