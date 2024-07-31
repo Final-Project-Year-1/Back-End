@@ -3,7 +3,7 @@ import ErrorModel from "../models/error-model.js";
 import vacationLogic from "../logic/vacation-logic.js"
 import VacationModel from "../models/vacation-model.js";
 
-//We don't need this
+
 async function getTotalCompanies() {
     try {
         const totalCompanies = await CompanyModel.countDocuments({ company: { $ne: "Cancelled" } });
