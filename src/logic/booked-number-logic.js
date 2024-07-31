@@ -3,6 +3,7 @@ import BookingModel from "../models/booking-model.js";
 import ErrorModel from '../models/error-model.js';
 import CompanyModel from "../models/company-model.js";
 
+// 1
 async function getTopBookedCompany() {
     try {
         const bookingsByCompany = await getBookingsByCompany();
@@ -18,7 +19,7 @@ async function getTopBookedCompany() {
         throw new ErrorModel(err.status || 500, err.message || "Internal server error");
     }
 }
-
+// 2
 async function getBookingsByCompany() {
     try {
         const result = await CompanyModel.aggregate([
