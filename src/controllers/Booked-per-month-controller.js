@@ -5,7 +5,8 @@ import verifyAdmin from '../middleware/verify-admin.js';
 
 const router = express.Router();
 
-router.get('/bookings-by-month', verifyAdmin, async (req, res) => {
+// verifyAdmin,
+router.get('/bookings-by-month', async (req, res) => {
     try {
         const result = await logic.getBookingsByCompanyByMonth();
         res.json(result);
@@ -18,7 +19,8 @@ router.get('/bookings-by-month', verifyAdmin, async (req, res) => {
     }
 });
 
-router.get('/bookings-by-company-by-month/:companyId', verifyAdmin,async (req, res) => {
+// verifyAdmin,
+router.get('/bookings-by-company-by-month/:companyId', async (req, res) => {
     try {
         const result = await logic.getBookingsByMonthForCompany(req.params.companyId);
         res.json(result);
