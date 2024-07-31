@@ -14,6 +14,7 @@ import bookedPerMonth from './src/controllers/Booked-per-month-controller.js'
 import companyRoutes from './src/controllers/companies-controller.js'; 
 import categoryRouts from './src/controllers/category-controller.js';
 import apiKeysRoutes from './src/controllers/apiKey-controller.js'; 
+import imageController from './src/controllers/image-controller.js';
 import fileUpload from "express-fileupload";
 import path from "path";
 import { fileURLToPath } from 'url';
@@ -36,19 +37,11 @@ app.use("/api", bookedPerMonth);
 app.use("/api",categoryRouts);
 app.use("/api", companyRoutes);
 app.use("/api", apiKeysRoutes);
+app.use("/api", imageController); 
 app.use(fileUpload());
 app.use(express.static(path.join(__dirname, "Front-End")));
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, 'uploads/');
-  },
-  filename: (req, file, cb) => {
-    cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
-  }
-});
 
-const upload = multer({ storage: storage });
 app.get('/', (req, res) => {
   res.send('Welcome to my server!');
 });
