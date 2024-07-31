@@ -409,10 +409,6 @@ async function getAllVacationImages() {
         const imageNames = vacations.map(vacation => vacation.imageName).filter(imageName => !!imageName);
 
         const uniqueImageNames = Array.from(new Set(imageNames));
-        const imageNameCounts = {};
-        imageNames.forEach(imageName => {
-            imageNameCounts[imageName] = (imageNameCounts[imageName] || 0) + 1;
-        });
 
         return {
             imageNames: uniqueImageNames,
