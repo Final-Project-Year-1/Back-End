@@ -40,7 +40,7 @@ app.use("/api", apiKeysRoutes);
 app.use("/api", imageController); 
 app.use(fileUpload());
 app.use(express.static(path.join(__dirname, "Front-End")));
-app.use('/assets/vacations/images', express.static(path.join(__dirname, '../assets/vacations/images')));  // שרת קבצים סטטי לתמונות שהועלו
+app.use('/assets', express.static(path.join(__dirname, 'assets'))); 
 
 
 app.get('/', (req, res) => {
