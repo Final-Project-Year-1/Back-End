@@ -32,7 +32,7 @@ router.get("/api-key/maps", async (request, response) => {
     }
 });
 
-/*router.get("/api-key/facebook", async (request, response) => {
+router.get("/api-key/facebook", async (request, response) => {
     try {
         const apiKey = process.env.ACCESS_TOKEN
         if(!apiKey){
@@ -45,7 +45,7 @@ router.get("/api-key/maps", async (request, response) => {
         console.log(err);
         response.json(err);
     }
-});*/
+});
 
 
 export default router
