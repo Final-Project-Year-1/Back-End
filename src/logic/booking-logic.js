@@ -162,12 +162,11 @@ async function findOneBooking(_id) {
   return vacation;
 }
 async function searchQuery(email, destination, departureMonth) {
-    try {
+    try {;
         const user = await UserModel.findOne({ email });
         if (!user) {
             throw new ErrorModel(404, 'User not found');
         }
-
         const bookings = await BookingModel.find({ userId: user._id })
             .populate({
                 path: 'vacationId',
@@ -178,33 +177,35 @@ async function searchQuery(email, destination, departureMonth) {
             })
             .populate('userId', 'email')
             .exec();
-
-
         const filteredBookings = bookings.filter(booking => {
             const userEmail = booking.userId.email.trim().toLowerCase();
             const vacationDestination = booking.vacationId.destination.trim().toLowerCase();
             const vacationStartDate = new Date(booking.vacationId.startDate);
-            const vacationMonth = vacationStartDate.getMonth() + 1; // getMonth() returns 0-11
+            const vacationMonth = vacationStartDate.getMonth() + 1;
 
             return userEmail === email && vacationDestination === destination && vacationMonth === departureMonth;
         });
 
-        const result = filteredBookings.map(booking => ({
-            orderNumber: booking.OrderNumber,
-            bookingDate: booking.bookingDate,
-            destination: booking.vacationId.destination,
-            description: booking.vacationId.description,
-            startDate: booking.vacationId.startDate,
-            endDate: booking.vacationId.endDate,
-            groupSize: booking.vacationId.groupOf,
-            VacationType: booking.vacationId.vacationType,
-            Company: booking.vacationId.companyName.company,
-            Category: booking.vacationId.tripCategory.category,
-            Rating: booking.vacationId.rating,
-            passengers: booking.Passengers,
-            totalPrice: booking.vacationId.price
-        }));
+        const result = filteredBookings.map(booking => {
+            const company = booking.vacationId.companyName ? booking.vacationId.companyName.company : 'N/A';
+            const category = booking.vacationId.tripCategory ? booking.vacationId.tripCategory.category : 'N/A';
 
+            return {
+                orderNumber: booking.OrderNumber,
+                bookingDate: booking.bookingDate,
+                destination: booking.vacationId.destination,
+                description: booking.vacationId.description,
+                startDate: booking.vacationId.startDate,
+                endDate: booking.vacationId.endDate,
+                groupSize: booking.vacationId.groupOf,
+                VacationType: booking.vacationId.vacationType,
+                Company: company,
+                Category: category,
+                Rating: booking.vacationId.rating,
+                passengers: booking.Passengers,
+                totalPrice: booking.vacationId.price
+            };
+        });
 
         return result;
     } catch (error) {

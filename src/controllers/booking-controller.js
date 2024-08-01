@@ -104,18 +104,22 @@ router.get("/bookings/bookings-by-vacation/:vacationId", verifyAdmin, async (req
     }
 });
 
-router.post('/user-booking-query', verifyAdmin,async (req, res) => {
+router.post('/user-booking-query', verifyAdmin, async (req, res) => {
     const { email, departureMonth, destination } = req.body;
     try {
         if (!destination || !departureMonth || !email) {
+            console.error('Missing parameters');
             throw new ErrorModel(400, 'All parameters are required: Email, Destination, departureMonth');
         }
+
         const emailTrimmed = email.trim().toLowerCase();
         const destTrimmed = destination.trim().toLowerCase();
         const month = parseInt(departureMonth, 10);
+
         if (isNaN(month)) {
             throw new ErrorModel(400, 'departure Month must be a number');
         }
+
         const result = await logic.searchQuery(emailTrimmed, destTrimmed, month);
         res.json(result);
     } catch (err) {
