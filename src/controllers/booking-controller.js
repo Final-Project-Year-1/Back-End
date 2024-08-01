@@ -108,7 +108,6 @@ router.post('/user-booking-query', verifyAdmin, async (req, res) => {
     const { email, departureMonth, destination } = req.body;
     try {
         if (!destination || !departureMonth || !email) {
-            console.error('Missing parameters');
             throw new ErrorModel(400, 'All parameters are required: Email, Destination, departureMonth');
         }
 
