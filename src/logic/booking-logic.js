@@ -14,7 +14,7 @@ async function createBooking(booking) {
     if (new Date(vacation.startDate) < currentDate) {
         throw new ErrorModel(400, `Cannot book a vacation that has already started`);
     }
-    
+
     if (booking.Passengers > vacation.spotsLeft) {
         throw new ErrorModel(400, `Not enough spots left for the requested number of passengers`);
     }
@@ -53,7 +53,7 @@ async function getAllBookings() {
         })
         .exec();
 }
-// 2
+
 async function deleteBooking(bookingId) {
     const deletedBooking = await BookingModel.findByIdAndDelete(bookingId).exec();
     if (!deletedBooking) throw new ErrorModel(404, `Booking with id ${bookingId} not found`);
@@ -113,7 +113,7 @@ async function updateBookingByOrderNumber(orderNumber, bookingData) {
 
     return updatedBooking;
 }
-// 3
+
 async function getBookingByUserId(userId) {
     return BookingModel.find({userId})
         .populate({
@@ -139,7 +139,7 @@ async function getBookingByOrderNumber(orderNumber) {
         .populate('userId')
         .exec();
 }
-// 4
+
 async function getBookingByVacationId(vacationId) {
     return BookingModel.find({vacationId})
     .populate({

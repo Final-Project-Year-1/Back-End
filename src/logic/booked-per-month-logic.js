@@ -74,7 +74,6 @@ async function getBookingsByCompanyByMonth() {
     }
 }
 
-// 1
 async function getBookingsByMonthForCompany(companyId) {
     try {
         const company = await CompanyModel.findById(companyId);
@@ -134,43 +133,10 @@ async function getBookingsByMonthForCompany(companyId) {
         throw new ErrorModel(err.status || 500, err.message || "Internal server error");
     }
 }
-//2
-async function getTotalBookingsByMonth(month) {
-    try {
-        const result = await BookingModel.aggregate([
-            {
-                $match: { $expr: { $eq: [{ $month: "$bookingDate" }, parseInt(month)] } }
-            },
-            {
-                $group: {
-                    _id: null,
-                    totalBookings: { $sum: 1 }
-                }
-            },
-            {
-                $project: {
-                    _id: 0,
-                    totalBookings: 1
-                }
-            }
-        ]);
 
-        if (!result || result.length === 0) {
-            throw new ErrorModel(404, "No bookings found for this month");
-        }
-
-        return {
-            month: parseInt(month),
-            totalBookings: result[0].totalBookings
-        };
-    } catch (err) {
-        throw new ErrorModel(err.status || 500, err.message || "Internal server error");
-    }
-}
 
 
 export default {
     getBookingsByCompanyByMonth,
     getBookingsByMonthForCompany,
-    getTotalBookingsByMonth,
 }

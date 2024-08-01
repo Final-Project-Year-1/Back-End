@@ -5,7 +5,7 @@ import verifyAdmin from '../middleware/verify-admin.js';
 
 const router = express.Router();
 
-// verifyAdmin,
+
 router.get('/bookings-by-month', async (req, res) => {
     try {
         const result = await logic.getBookingsByCompanyByMonth();
@@ -19,23 +19,10 @@ router.get('/bookings-by-month', async (req, res) => {
     }
 });
 
-// verifyAdmin,
+
 router.get('/bookings-by-company-by-month/:companyId', async (req, res) => {
     try {
         const result = await logic.getBookingsByMonthForCompany(req.params.companyId);
-        res.json(result);
-    } catch (err) {
-        if (err instanceof ErrorModel) {
-            res.status(err.status).json({ error: err.message });
-        } else {
-            res.status(500).json({ error: "Internal server error" });
-        }
-    }
-});
-
-router.get('/total-bookings-by-month/:month', verifyAdmin, async (req, res) => {
-    try {
-        const result = await logic.getTotalBookingsByMonth(req.params.month);
         res.json(result);
     } catch (err) {
         if (err instanceof ErrorModel) {
