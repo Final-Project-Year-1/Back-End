@@ -10,6 +10,11 @@ async function createBooking(booking) {
     const vacation = await vacationLogic.getOneVacation(booking.vacationId);
     if (!vacation) throw new ErrorModel(404, `Vacation with id ${booking.vacationId} not found`);
 
+    const currentDate = new Date();
+    if (new Date(vacation.startDate) < currentDate) {
+        throw new ErrorModel(400, `Cannot book a vacation that has already started`);
+    }
+    
     if (booking.Passengers > vacation.spotsLeft) {
         throw new ErrorModel(400, `Not enough spots left for the requested number of passengers`);
     }
