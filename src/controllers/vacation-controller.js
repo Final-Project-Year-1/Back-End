@@ -34,7 +34,7 @@ router.get("/vacations/:_id", async (request, response) => {
     }
 });
 
-router.put("/vacations/:_id", async (request, response) => {
+router.put("/vacations/:_id",verifyAdmin, async (request, response) => {
     try {
         const vacationId = request.params._id;
         const vacationData = request.body;
