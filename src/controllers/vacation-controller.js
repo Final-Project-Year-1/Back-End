@@ -80,7 +80,7 @@ router.post('/search-vacations-admin-query', async (req, res) => {
         }
     }
 });
-router.post("/vacations", async (request, response) => {
+router.post("/vacations", verifyAdmin,async (request, response) => {
     try {
         request.body.image = request.files?.image;
         const vacation = new VacationModel(request.body);
