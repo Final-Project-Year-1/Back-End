@@ -8,7 +8,7 @@ import ErrorModel from "../models/error-model.js";
 
 const router = express.Router();
 
-router.post("/newbooking", verifyLoggedIn, async (request, response) => {
+router.post("/newbooking", async (request, response) => {
     try {
         const booking = new BookingModel(request.body);
         const addedBooking = await logic.createBooking(booking);
