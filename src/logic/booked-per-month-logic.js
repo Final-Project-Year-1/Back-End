@@ -25,7 +25,7 @@ async function getBookingsByCompanyByMonth() {
             },
             {
                 $group: {
-                    _id: {
+                    _id: { 
                         companyName: "$vacation.companyName",
                         year: { $year: "$bookingDate" },
                         month: { $month: "$bookingDate" }

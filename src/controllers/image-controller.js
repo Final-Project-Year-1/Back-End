@@ -32,7 +32,6 @@ router.post('/upload', upload.single('image'), async (req, res) => {
     await newImage.save();
     res.send({ message: 'File uploaded and saved to database successfully', imagePath });
   } catch (error) {
-    console.error('Error uploading and saving file:', error);
     res.status(500).send('Error uploading and saving file');
   }
 });
