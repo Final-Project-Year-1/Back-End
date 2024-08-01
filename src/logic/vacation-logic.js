@@ -395,17 +395,17 @@ async function searchQueryVacationsAdmin(companyId, departureMonth, destination)
 //     }
 // }
 // 2
-// async function getAllDestinations() {
-//     try {
-//         const vacations = await getAllVacations();
-//         const destinations = [...new Set(vacations.map(vacation => vacation.destination))];
-//         const destinationCount = destinations.length;
+async function getAllDestinations() {
+    try {
+        const vacations = await getAllVacations();
+        const destinations = [...new Set(vacations.map(vacation => vacation.destination))];
+        const destinationCount = destinations.length;
     
-//         return { destinations, destinationCount };
-//     } catch (err) {
-//         throw new ErrorModel(err.status || 500, err.message || "Internal server error");
-//     }
-// }
+        return { destinations, destinationCount };
+    } catch (err) {
+        throw new ErrorModel(err.status || 500, err.message || "Internal server error");
+    }
+}
 
 async function getAllVacationImages() {
     try {

@@ -246,13 +246,13 @@ router.post('/search-vacations',  async (req, res) => {
 //         }
 //     }
 // });
-// router.get('/vacations/destinations/countries', async (req, res) => {
-//     try {
-//         const countries = await logic.getAllDestinations();
-//         res.json(countries);
-//     } catch (err) {
-//         res.status(err.status || 500).json({ message: err.message });
-//     }
-// });
+router.get('/vacations/destinations/countries', async (req, res) => {
+    try {
+        const countries = await logic.getAllDestinations();
+        res.json(countries);
+    } catch (err) {
+        res.status(err.status || 500).json({ message: err.message });
+    }
+});
 
 export default router;
