@@ -6,7 +6,6 @@ import verifyAdmin from '../middleware/verify-admin.js';
 const router = express.Router();
 
 
-//Do we need this?
 router.get('/top-booked-company', verifyAdmin, async (req, res) => {
     try {
         const result = await logic.getTopBookedCompany();

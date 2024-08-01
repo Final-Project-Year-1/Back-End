@@ -15,7 +15,7 @@ async function getBookingsByCompanyByMonth() {
             {
                 $lookup: {
                     from: 'vacations',
-                    localField: 'vacationId',
+                    localField: 'vacationId', // im here
                     foreignField: '_id',
                     as: 'vacation'
                 }
@@ -25,7 +25,7 @@ async function getBookingsByCompanyByMonth() {
             },
             {
                 $group: {
-                    _id: {
+                    _id: { 
                         companyName: "$vacation.companyName",
                         year: { $year: "$bookingDate" },
                         month: { $month: "$bookingDate" }
@@ -63,7 +63,6 @@ async function getBookingsByCompanyByMonth() {
             }
         ]);
 
-        console.log("Aggregation Result:", result); // Log the result for debugging
 
         if (!result || result.length === 0) {
             throw new ErrorModel(404, "No bookings found");
@@ -71,12 +70,11 @@ async function getBookingsByCompanyByMonth() {
 
         return result;
     } catch (err) {
-        console.error("Error in getBookingsByCompanyByMonth:", err);
         throw new ErrorModel(err.status || 500, err.message || "Internal server error");
     }
 }
 
-
+// 1
 async function getBookingsByMonthForCompany(companyId) {
     try {
         const company = await CompanyModel.findById(companyId);
@@ -133,11 +131,10 @@ async function getBookingsByMonthForCompany(companyId) {
             bookings: result
         };
     } catch (err) {
-        console.error("Error in getBookingsByMonthForCompany:", err);
         throw new ErrorModel(err.status || 500, err.message || "Internal server error");
     }
 }
-
+//2
 async function getTotalBookingsByMonth(month) {
     try {
         const result = await BookingModel.aggregate([
@@ -167,7 +164,6 @@ async function getTotalBookingsByMonth(month) {
             totalBookings: result[0].totalBookings
         };
     } catch (err) {
-        console.error("Error in getTotalBookingsByMonth:", err);
         throw new ErrorModel(err.status || 500, err.message || "Internal server error");
     }
 }

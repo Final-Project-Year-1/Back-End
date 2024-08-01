@@ -1,13 +1,7 @@
 import BookingModel from "../models/booking-model.js";
 import ErrorModel from "../models/error-model.js";
 import vacationLogic from "./vacation-logic.js";
-
-// async function createBooking(booking) {
-//     const errors = booking.validateSync();
-//     if (errors) throw new ErrorModel(400, errors.message);
-//     return booking.save();
-// }
-
+import UserModel from "../models/user-model.js"
 
 async function createBooking(booking) {
     const errors = booking.validateSync();
@@ -34,7 +28,6 @@ async function generateNextOrderNumber() {
         const nextOrderNumber = (lastOrderNumber + 1).toString().padStart(6, '0');
         return nextOrderNumber;
     } catch (error) {
-        console.error('Error generating order number:', error);
         throw new ErrorModel(500, 'Internal Server Error');
     }
 }
@@ -55,13 +48,14 @@ async function getAllBookings() {
         })
         .exec();
 }
-
+// 2
 async function deleteBooking(bookingId) {
     const deletedBooking = await BookingModel.findByIdAndDelete(bookingId).exec();
     if (!deletedBooking) throw new ErrorModel(404, `Booking with id ${bookingId} not found`);
     await vacationLogic.updateVacationSpots(deletedBooking.vacationId, (-1)*deletedBooking.Passengers);
     return deletedBooking;
 }
+// 1
 async function deleteBookingByOrderNumber(orderNumber) {
     const deletedBooking = await BookingModel.findOneAndDelete({ OrderNumber: orderNumber }).exec();
     if (!deletedBooking) throw new ErrorModel(404, `Booking with OrderNumber ${orderNumber} not found`);
@@ -86,7 +80,6 @@ async function updateBooking(bookingId, bookingData) {
     if (updatedBooking.status === "cancelled" && oldBooking.status !== "cancelled") {
         await vacationLogic.updateVacationSpots(updatedBooking.vacationId, -oldPassengers);
     } else if (updatedBooking.status !== "cancelled" && oldBooking.status === "cancelled") {
-        // אם ההזמנה לא בוטלה קודם וכעת כן בוטלה, נוריד את מספר הנוסעים מהחופשה
         await vacationLogic.updateVacationSpots(updatedBooking.vacationId, newPassengers);
     } else {
         await vacationLogic.updateVacationSpots(updatedBooking.vacationId, passengerDifference);
@@ -108,7 +101,6 @@ async function updateBookingByOrderNumber(orderNumber, bookingData) {
     if (updatedBooking.status === "cancelled" && oldBooking.status !== "cancelled") {
         await vacationLogic.updateVacationSpots(updatedBooking.vacationId, -oldPassengers);
     } else if (updatedBooking.status !== "cancelled" && oldBooking.status === "cancelled") {
-        // אם ההזמנה לא בוטלה קודם וכעת כן בוטלה, נוריד את מספר הנוסעים מהחופשה
         await vacationLogic.updateVacationSpots(updatedBooking.vacationId, newPassengers);
     } else {
         await vacationLogic.updateVacationSpots(updatedBooking.vacationId, passengerDifference);
@@ -116,6 +108,7 @@ async function updateBookingByOrderNumber(orderNumber, bookingData) {
 
     return updatedBooking;
 }
+// 3
 async function getBookingByUserId(userId) {
     return BookingModel.find({userId})
         .populate({
@@ -128,6 +121,7 @@ async function getBookingByUserId(userId) {
         .populate('userId')
         .exec();
 }
+
 async function getBookingByOrderNumber(orderNumber) {
     return BookingModel.findOne({ OrderNumber: orderNumber })
         .populate({
@@ -140,6 +134,7 @@ async function getBookingByOrderNumber(orderNumber) {
         .populate('userId')
         .exec();
 }
+// 4
 async function getBookingByVacationId(vacationId) {
     return BookingModel.find({vacationId})
     .populate({
@@ -166,6 +161,59 @@ async function findOneBooking(_id) {
   if (!vacation) throw new ErrorModel(404, `_id ${_id} not found`);
   return vacation;
 }
+async function searchQuery(email, destination, departureMonth) {
+    try {;
+        const user = await UserModel.findOne({ email });
+        if (!user) {
+            throw new ErrorModel(404, 'User not found');
+        }
+        const bookings = await BookingModel.find({ userId: user._id })
+            .populate({
+                path: 'vacationId',
+                populate: [
+                    { path: 'companyName', select: 'company' },
+                    { path: 'tripCategory', select: 'category' }
+                ]
+            })
+            .populate('userId', 'email')
+            .exec();
+        const filteredBookings = bookings.filter(booking => {
+            const userEmail = booking.userId.email.trim().toLowerCase();
+            const vacationDestination = booking.vacationId.destination.trim().toLowerCase();
+            const vacationStartDate = new Date(booking.vacationId.startDate);
+            const vacationMonth = vacationStartDate.getMonth() + 1;
+
+            return userEmail === email && vacationDestination === destination && vacationMonth === departureMonth;
+        });
+
+        const result = filteredBookings.map(booking => {
+            const company = booking.vacationId.companyName ? booking.vacationId.companyName.company : 'N/A';
+            const category = booking.vacationId.tripCategory ? booking.vacationId.tripCategory.category : 'N/A';
+
+            return {
+                orderNumber: booking.OrderNumber,
+                bookingDate: booking.bookingDate,
+                destination: booking.vacationId.destination,
+                description: booking.vacationId.description,
+                startDate: booking.vacationId.startDate,
+                endDate: booking.vacationId.endDate,
+                groupSize: booking.vacationId.groupOf,
+                VacationType: booking.vacationId.vacationType,
+                Company: company,
+                Category: category,
+                Rating: booking.vacationId.rating,
+                passengers: booking.Passengers,
+                totalPrice: booking.vacationId.price
+            };
+        });
+
+        return result;
+    } catch (error) {
+        throw new ErrorModel(500, 'Internal server error');
+    }
+}
+
+
 
 export default {
     createBooking,
@@ -179,4 +227,5 @@ export default {
     getBookingByOrderNumber,
     updateBookingByOrderNumber,
     deleteBookingByOrderNumber,
+    searchQuery,
 };

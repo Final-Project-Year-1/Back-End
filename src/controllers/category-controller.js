@@ -7,19 +7,15 @@ import CategoryModel from '../models/category-model.js';
 
 const router = express.Router();
 
-// יצירת קטגוריה חדשה
 router.post("/addCategory", verifyAdmin, async (request, response) => {
     try {
         const category = new CategoryModel(request.body);
         const addedCategory = await categoryLogic.createCategory(category);
         response.status(201).json(addedCategory);
     } catch (err) {
-        console.log(err);
         response.status(400).json(err);
     }
 });
-
-// עדכון קטגוריה
 router.put('/updateCategory/:id', verifyAdmin, async (req, res) => {
     try {
         const updatedCategory = await categoryLogic.updateCategoryName(req.params.id, req.body);
@@ -29,7 +25,6 @@ router.put('/updateCategory/:id', verifyAdmin, async (req, res) => {
     }
 });
 
-// מחיקת קטגוריה
 router.delete('/deleteCategory/:id', verifyAdmin, async (req, res) => {
     try {
         const result = await categoryLogic.deleteCategory(req.params.id);
@@ -39,8 +34,7 @@ router.delete('/deleteCategory/:id', verifyAdmin, async (req, res) => {
     }
 });
 
-// קבלת כל הקטגוריות
-router.get('/allCategories', verifyAdmin, async (req, res) => {
+router.get('/allCategories', async (req, res) => {
     try {
         const categories = await categoryLogic.getAllCategories();
         res.json(categories);
@@ -59,7 +53,7 @@ router.get('/total-categories', verifyAdmin, async (req, res) => {
     }
 });
 
-// מציאת קטגוריה לפי מזהה
+
 router.get('/find-category/:_id', async (req, res) => {
     try {
         const category = await categoryLogic.findCategoryById(req.params._id);

@@ -7,12 +7,14 @@ const VacationSchema = new Schema({
         type: String,
         required: [true, "Missing destination"],
         minlength: [2, "destination name is too short"],
+        maxlength: [20, "destination name is too long"],
         trim: true
     },
     description: {
         type: String,
         required: [true, "Missing description"],
         minlength: [2, "description name is too short"],
+        maxlength: [100, "description name is too long"],
         trim: true
     },
     startDate: {
@@ -35,7 +37,7 @@ const VacationSchema = new Schema({
     },
     vacationType: {
         type: String,
-        enum: ['All-Inclusive', 'Bed and Breakfast', 'Full Board', 'Half Board','Nature','Culture','Adventure','Relaxation', 'Deleted'],
+        enum: ['All-Inclusive', 'Bed and Breakfast', 'FullBoard', 'HalfBoard', 'Cancelled'],
         required: true
     },
     companyName: {
