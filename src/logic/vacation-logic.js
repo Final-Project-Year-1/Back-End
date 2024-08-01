@@ -112,7 +112,7 @@ async function createCancelledVacation() {
         endDate: new Date(),
         price: 0,
         groupOf: 1,
-        vacationType: "Deleted",
+        vacationType: "Cancelled",
         companyName: "66a6181bdf91811f95d24e27",  
         tripCategory: "66a3ca690aca3398927a017c",  
         imageName: CANCELLED_VACATION_IMAGE
