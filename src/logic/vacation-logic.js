@@ -443,7 +443,7 @@ export default {
     updateVacationRating,
     updateGeneralVacationFields,
     // searchVacationsByCriteria,
-    // getAllDestinations,
+    getAllDestinations,
     getAllVacationImages,
     searchQueryVacationsAdmin,
 };
