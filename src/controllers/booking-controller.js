@@ -50,7 +50,7 @@ router.get('/bookings/order/:orderNumber', async (request, response) => {
         response.status(500).json({ message: 'Internal Server Error' });
     }
 });
-router.get("/bookings", verifyLoggedIn, async (request, response) => {
+router.get("/bookings", verifyAdmin, async (request, response) => {
     try {
         const data = await logic.getAllBookings();
         response.json(data);
