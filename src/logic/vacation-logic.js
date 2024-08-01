@@ -324,7 +324,7 @@ async function searchQueryVacationsAdmin(companyId, departureMonth, destination)
             let matches = true;
             if (vacation.destination && vacation.destination.toLowerCase() === "cancelled") {
                 return false; 
-            }  
+            }
 
             if (companyId) {
                 matches = matches && (vacation.companyName && vacation.companyName._id.toString() === companyId);
@@ -335,7 +335,9 @@ async function searchQueryVacationsAdmin(companyId, departureMonth, destination)
             }
 
             if (destination) {
-                matches = matches && (vacation.destination && vacation.destination.toLowerCase() === destination.toLowerCase().trim());
+                const formattedDestination = destination.toLowerCase().trim().replace(/\s+/g, ' ');
+                const formattedVacationDestination = vacation.destination ? vacation.destination.toLowerCase().trim().replace(/\s+/g, ' ') : '';
+                matches = matches && (formattedVacationDestination === formattedDestination);
             }
 
             return matches;
@@ -350,7 +352,6 @@ async function searchQueryVacationsAdmin(companyId, departureMonth, destination)
         throw new ErrorModel(err.status || 500, err.message || "Internal server error");
     }
 }
-
 
 // 1
 // async function searchVacationsByCriteria(companyId, minRating, numOfPassengers, departureMonth) {
