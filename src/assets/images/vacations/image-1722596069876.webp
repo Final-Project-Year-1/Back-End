@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Error</title>
+</head>
+<body>
+<pre>Error: ENOENT: no such file or directory, stat &#39;C:\Users\omer3\Desktop\Project\Back-End\src\assets\images\vacations\image-1722530066019.webp&#39;</pre>
+</body>
+</html>
