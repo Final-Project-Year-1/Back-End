@@ -6,7 +6,7 @@ import verifyAdmin from "../middleware/verify-admin.js";
 
 const router = express.Router();
 
-router.post("/vacation/reviews", verifyLoggedIn, async (request, response) => {
+router.post("/vacation/reviews", async (request, response) => {
     try {
         const review = new ReviewModel(request.body);
         const addedReview = await logic.createReview(review);
@@ -25,7 +25,7 @@ router.get("/vacation/reviews", verifyLoggedIn, async (request, response) => {
     }
 });
 
-router.delete("/vacation/reviews/:id", verifyLoggedIn, async (request, response) => {
+router.delete("/vacation/reviews/:id", async (request, response) => {
     try {
         const deletedReview = await logic.deleteReview(request.params.id);
         response.json(deletedReview);
@@ -43,7 +43,7 @@ router.get("/users/reviews/:userId", verifyAdmin, async (request, response) => {
     }
 });
 
-router.put("/vacation/reviews/:id", verifyLoggedIn, async (request, response) => {
+router.put("/vacation/reviews/:id", async (request, response) => {
     try {
         const updatedReview = await logic.updateReview(request.params.id, request.body);
         response.json(updatedReview);
