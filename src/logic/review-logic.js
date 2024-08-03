@@ -5,7 +5,7 @@ import UserModel from '../models/user-model.js';
 import vacationLogic from '../logic/vacation-logic.js';
 
 async function createReview(review) {
-    const errors = review.validateSync(); // if we followed the scheme rules...
+    const errors = review.validateSync(); 
     if (errors) {
         throw new ErrorModel(400, errors.message);
     }

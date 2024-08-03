@@ -7,12 +7,14 @@ const VacationSchema = new Schema({
         type: String,
         required: [true, "Missing destination"],
         minlength: [2, "destination name is too short"],
+        maxlength: [20, "destination name is too long"],
         trim: true
     },
     description: {
         type: String,
         required: [true, "Missing description"],
         minlength: [2, "description name is too short"],
+        maxlength: [1000, "description name is too long"],
         trim: true
     },
     startDate: {

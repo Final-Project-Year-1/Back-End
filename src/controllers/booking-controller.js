@@ -8,7 +8,7 @@ import ErrorModel from "../models/error-model.js";
 
 const router = express.Router();
 
-router.post("/newbooking", verifyLoggedIn, async (request, response) => {
+router.post("/newbooking", async (request, response) => {
     try {
         const booking = new BookingModel(request.body);
         const addedBooking = await logic.createBooking(booking);
@@ -50,7 +50,7 @@ router.get('/bookings/order/:orderNumber', async (request, response) => {
         response.status(500).json({ message: 'Internal Server Error' });
     }
 });
-router.get("/bookings", verifyLoggedIn, async (request, response) => {
+router.get("/bookings", verifyAdmin, async (request, response) => {
     try {
         const data = await logic.getAllBookings();
         response.json(data);
@@ -104,18 +104,21 @@ router.get("/bookings/bookings-by-vacation/:vacationId", verifyAdmin, async (req
     }
 });
 
-router.post('/user-booking-query', verifyAdmin,async (req, res) => {
+router.post('/user-booking-query', verifyAdmin, async (req, res) => {
     const { email, departureMonth, destination } = req.body;
     try {
         if (!destination || !departureMonth || !email) {
             throw new ErrorModel(400, 'All parameters are required: Email, Destination, departureMonth');
         }
+
         const emailTrimmed = email.trim().toLowerCase();
         const destTrimmed = destination.trim().toLowerCase();
         const month = parseInt(departureMonth, 10);
+
         if (isNaN(month)) {
             throw new ErrorModel(400, 'departure Month must be a number');
         }
+
         const result = await logic.searchQuery(emailTrimmed, destTrimmed, month);
         res.json(result);
     } catch (err) {
